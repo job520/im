@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"gopkg.in/fatih/set.v0"
 	"log"
@@ -61,7 +62,7 @@ func dispatch(data []byte) {
 			}
 		}
 	case CmdHeart:
-		//检测客户端的心跳
+		// 检测客户端的心跳
 	}
 }
 
@@ -69,8 +70,8 @@ func dispatch(data []byte) {
 func sendproc(node *Node) {
 	for {
 		select {
-		case data := <-node.DataQueue:
-			err := node.Conn.WriteMessage(websocket.TextMessage, data)
+		case data := <-node.DataQueue: // 收到客户端消息
+			err := node.Conn.WriteMessage(websocket.TextMessage, data) // 服务端回应客户端消息
 			if err != nil {
 				log.Println(err.Error())
 				return
@@ -82,14 +83,14 @@ func sendproc(node *Node) {
 // 接收逻辑
 func recvproc(node *Node) {
 	for {
-		_, data, err := node.Conn.ReadMessage()
+		_, data, err := node.Conn.ReadMessage() // 监听服务端接收到的消息
 		if err != nil {
 			log.Println(err.Error())
 			return
 		}
 
-		dispatch(data)
-		//todo对data进一步处理
+		dispatch(data) // 消息处理
+		// todo: 对 data 进一步处理
 		fmt.Printf("recv<=%s", data)
 	}
 }
@@ -108,32 +109,31 @@ func checkToken(userId int64, token string) bool {
 	return true
 }
 
-func Chat(writer http.ResponseWriter, request *http.Request) {
-	query := request.URL.Query()
-	id := query.Get("id")
-	token := query.Get("token")
+func Chat(ctx *gin.Context) {
+	id := ctx.Query("id")
+	token := ctx.Query("token")
 	userId, _ := strconv.ParseInt(id, 10, 64)
-	//校验token是否合法
+	// 校验 token 是否合法
 	islegal := checkToken(userId, token)
 
 	conn, err := (&websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return islegal
 		},
-	}).Upgrade(writer, request, nil)
+	}).Upgrade(ctx.Writer, ctx.Request, nil)
 
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	//获得websocket链接conn
+	// 获得 websocket 链接 conn
 	node := &Node{
 		Conn:      conn,
 		DataQueue: make(chan []byte, 50),
 		GroupSets: set.New(set.ThreadSafe),
 	}
 
-	//获取用户全部群Id
+	// 获取用户全部群 Id
 	comIds := []int{1, 2, 3}
 	for _, v := range comIds {
 		node.GroupSets.Add(v)
@@ -143,15 +143,20 @@ func Chat(writer http.ResponseWriter, request *http.Request) {
 	clientMap[userId] = node
 	rwlocker.Unlock()
 
-	//开启协程处理发送逻辑
+	// 开启协程处理发送逻辑
 	go sendproc(node)
 
-	//开启协程完成接收逻辑
+	// 开启协程完成接收逻辑
 	go recvproc(node)
 
 	sendMsg(userId, []byte("welcome!"))
 }
 
 func main() {
-	http.HandleFunc("/chat", Chat)
+	r := gin.Default()
+	r.GET("/chat", Chat)
 }
+
+// todo: clientMap 拆分
+// todo: 在图片上传的时候做 hash校验，如果资源文件已经存在了，直接将 url 返回给客户端
+// todo: 拆分为分布式服务
