@@ -12,14 +12,14 @@ import (
 	"sync"
 )
 
-// userid和Node映射关系表
+// userid 和 Node 映射关系表
 var clientMap map[int64]*Node = make(map[int64]*Node, 0)
 
 var rwlocker sync.RWMutex
 
 type Node struct {
 	Conn *websocket.Conn
-	//并行转串行,
+	// 并行转串行,
 	DataQueue chan []byte
 	GroupSets set.Interface
 }
@@ -32,16 +32,16 @@ const (
 )
 
 type Message struct {
-	Id      int64  `json:"id,omitempty" form:"id"`           //消息ID
-	Userid  int64  `json:"userid,omitempty" form:"userid"`   //谁发的
-	Cmd     int    `json:"cmd,omitempty" form:"cmd"`         //群聊还是私聊
-	Dstid   int64  `json:"dstid,omitempty" form:"dstid"`     //对端用户ID/群ID
-	Media   int    `json:"media,omitempty" form:"media"`     //消息按照什么样式展示
-	Content string `json:"content,omitempty" form:"content"` //消息的内容
-	Pic     string `json:"pic,omitempty" form:"pic"`         //预览图片
-	Url     string `json:"url,omitempty" form:"url"`         //服务的URL
-	Memo    string `json:"memo,omitempty" form:"memo"`       //简单描述
-	Amount  int    `json:"amount,omitempty" form:"amount"`   //其他和数字相关的
+	Id      int64  `json:"id,omitempty" form:"id"`           // 消息ID
+	Userid  int64  `json:"userid,omitempty" form:"userid"`   // 谁发的
+	Cmd     int    `json:"cmd,omitempty" form:"cmd"`         // 群聊还是私聊
+	Dstid   int64  `json:"dstid,omitempty" form:"dstid"`     // 对端用户ID/群ID
+	Media   int    `json:"media,omitempty" form:"media"`     // 消息按照什么样式展示
+	Content string `json:"content,omitempty" form:"content"` // 消息的内容
+	Pic     string `json:"pic,omitempty" form:"pic"`         // 预览图片
+	Url     string `json:"url,omitempty" form:"url"`         // 服务的URL
+	Memo    string `json:"memo,omitempty" form:"memo"`       // 简单描述
+	Amount  int    `json:"amount,omitempty" form:"amount"`   // 其他和数字相关的
 }
 
 // 后端调度逻辑处理
@@ -158,5 +158,7 @@ func main() {
 }
 
 // todo: clientMap 拆分
+// todo: 添加心跳处理逻辑
+// todo: 添加异常关闭的逻辑（signal.Notify...）
 // todo: 在图片上传的时候做 hash校验，如果资源文件已经存在了，直接将 url 返回给客户端
 // todo: 拆分为分布式服务
