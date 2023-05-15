@@ -157,6 +157,7 @@ func main() {
 	r.GET("/chat", Chat)
 }
 
+// todo: 业务逻辑拆分
 // todo: clientMap 拆分
 // todo: 添加心跳处理逻辑
 // todo: 添加异常关闭的逻辑（signal.Notify...）
