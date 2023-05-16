@@ -155,6 +155,13 @@ func Chat(ctx *gin.Context) {
 func main() {
 	r := gin.Default()
 	r.GET("/chat", Chat)
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
+	}
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		panic(err)
+	}
 }
 
 // todo: 业务逻辑拆分
@@ -163,3 +170,4 @@ func main() {
 // todo: 添加异常关闭的逻辑（signal.Notify...）
 // todo: 在图片上传的时候做 hash校验，如果资源文件已经存在了，直接将 url 返回给客户端
 // todo: 拆分为分布式服务
+// todo: 升级为 wss
