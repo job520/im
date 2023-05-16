@@ -165,6 +165,7 @@ func main() {
 }
 
 // todo: 业务逻辑拆分
+// todo: 消息拆分 -- 单聊消息、群聊消息、系统消息
 // todo: clientMap 拆分
 // todo: 添加心跳处理逻辑
 // todo: 添加异常关闭的逻辑（signal.Notify...）
