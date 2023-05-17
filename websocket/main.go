@@ -35,7 +35,7 @@ func Chat(ctx *gin.Context) {
 		GroupSets: *utils.NewSet(),
 	}
 
-	// 获取用户全部群 Id
+	// 获取用户全部群 ID
 	groupIDArr := []int{1, 2, 3}
 	for _, v := range groupIDArr {
 		node.GroupSets.Add(v)
