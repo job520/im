@@ -9,7 +9,7 @@ import (
 var RwLocker sync.RWMutex
 
 // userid 和 Node 映射关系表
-var ClientMap map[int]*Node = make(map[int]*Node, 0)
+var ClientMap = make(map[int]*Node, 0)
 
 type Node struct {
 	Conn *websocket.Conn
