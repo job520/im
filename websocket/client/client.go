@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func receiveHandler(conn *websocket.Conn) {
+func receive(conn *websocket.Conn) {
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
@@ -30,7 +30,7 @@ func main() {
 		panic(err)
 	}
 	defer conn.Close()
-	go receiveHandler(conn)
+	go receive(conn)
 
 	for {
 		select {
