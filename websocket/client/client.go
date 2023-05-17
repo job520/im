@@ -30,7 +30,7 @@ func main() {
 
 	signal.Notify(interrupt, os.Interrupt) // Notify the interrupt channel for SIGINT
 
-	socketUrl := "ws://localhost:8080" + "/chat"
+	socketUrl := "ws://localhost:8080" + "/chat?id=1&token=xxx"
 	conn, _, err := websocket.DefaultDialer.Dial(socketUrl, nil)
 	if err != nil {
 		log.Fatal("Error connecting to Websocket Server:", err)
@@ -42,9 +42,20 @@ func main() {
 	// We send our relevant packets here
 	for {
 		select {
-		case <-time.After(time.Duration(1) * time.Millisecond * 1000):
+		case <-time.After(3 * time.Second):
 			// Send an echo packet every second
-			err := conn.WriteMessage(websocket.TextMessage, []byte("Hello from GolangDocs!"))
+			msg := `
+{
+    "id": 2,
+    "cmd": 1,
+    "fromID": 1,
+    "destID": 1,
+    "msg": "hello world",
+    "msgType": 1,
+    "ackMsgID": 1
+}
+`
+			err := conn.WriteMessage(websocket.TextMessage, []byte(msg))
 			if err != nil {
 				log.Println("Error during writing to websocket:", err)
 				return

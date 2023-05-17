@@ -2,7 +2,6 @@ package logic
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"im/websocket/global"
 	"log"
@@ -16,16 +15,16 @@ func dispatch(data []byte) {
 		log.Println(err.Error())
 		return
 	}
-	switch msg.Cmd {
-	case global.CmdSingleMsg:
-		SendMsg(msg.Dstid, data)
-	case global.CmdRoomMsg:
+	switch msg.CMD {
+	case global.SingleMsg:
+		SendMsg(msg.DestID, data)
+	case global.GroupMsg:
 		for _, v := range global.ClientMap {
-			if v.GroupSets.Has(msg.Dstid) {
+			if v.GroupSets.Has(msg.DestID) {
 				v.DataQueue <- data
 			}
 		}
-	case global.CmdHeart:
+	case global.HeartMsg:
 		// 检测客户端的心跳
 	}
 }
@@ -55,12 +54,12 @@ func Receive(node *global.Node) {
 
 		dispatch(data) // 消息处理
 
-		fmt.Printf("recv<=%s", data)
+		log.Println("message received.")
 	}
 }
 
 // 发送消息,发送到消息的管道
-func SendMsg(userId int64, msg []byte) {
+func SendMsg(userId int, msg []byte) {
 	global.RwLocker.RLock()
 	node, ok := global.ClientMap[userId]
 	global.RwLocker.RUnlock()
@@ -69,6 +68,6 @@ func SendMsg(userId int64, msg []byte) {
 	}
 }
 
-func CheckToken(userId int64, token string) bool {
+func CheckToken(userId int, token string) bool {
 	return true
 }

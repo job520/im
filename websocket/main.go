@@ -14,7 +14,7 @@ import (
 func Chat(ctx *gin.Context) {
 	id := ctx.Query("id")
 	token := ctx.Query("token")
-	userId, _ := strconv.ParseInt(id, 10, 64)
+	userId, _ := strconv.Atoi(id)
 	// 校验 token 是否合法
 	islegal := logic.CheckToken(userId, token)
 
