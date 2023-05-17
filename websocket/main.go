@@ -3,9 +3,10 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"im/websocket/global"
 	"im/websocket/logic"
+	"im/websocket/service"
 	"im/websocket/utils"
+	"im/websocket/variables"
 	"log"
 	"net/http"
 	"strconv"
@@ -29,7 +30,7 @@ func Chat(ctx *gin.Context) {
 		return
 	}
 	// 获得 websocket 链接 conn
-	node := &global.Node{
+	node := &variables.Node{
 		Conn:      conn,
 		DataQueue: make(chan string, 10),
 		GroupSets: *utils.NewSet(),
@@ -41,9 +42,9 @@ func Chat(ctx *gin.Context) {
 		node.GroupSets.Add(v)
 	}
 
-	global.RwLocker.Lock()
-	global.ClientMap[userId] = node
-	global.RwLocker.Unlock()
+	variables.RwLocker.Lock()
+	variables.ClientMap[userId] = node
+	variables.RwLocker.Unlock()
 
 	// 开启协程处理发送逻辑
 	go logic.Send(node)
@@ -51,7 +52,7 @@ func Chat(ctx *gin.Context) {
 	// 开启协程完成接收逻辑
 	go logic.Receive(node)
 
-	logic.SendMsg(userId, "hello from server!")
+	service.ReceiveSingleMsg(userId, "hello from server!")
 }
 
 func main() {

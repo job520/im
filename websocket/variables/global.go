@@ -1,4 +1,4 @@
-package global
+package variables
 
 import (
 	"github.com/gorilla/websocket"
