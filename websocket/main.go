@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"gopkg.in/fatih/set.v0"
 	"im/websocket/global"
 	"im/websocket/logic"
+	"im/websocket/utils"
 	"log"
 	"net/http"
 	"strconv"
@@ -32,7 +32,7 @@ func Chat(ctx *gin.Context) {
 	node := &global.Node{
 		Conn:      conn,
 		DataQueue: make(chan []byte, 50),
-		GroupSets: set.New(set.ThreadSafe),
+		GroupSets: *utils.NewSet(),
 	}
 
 	// 获取用户全部群 Id

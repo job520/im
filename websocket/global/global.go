@@ -2,7 +2,7 @@ package global
 
 import (
 	"github.com/gorilla/websocket"
-	"gopkg.in/fatih/set.v0"
+	"im/websocket/utils"
 	"sync"
 )
 
@@ -15,7 +15,7 @@ type Node struct {
 	Conn *websocket.Conn
 	// 并行转串行,
 	DataQueue chan []byte
-	GroupSets set.Interface
+	GroupSets utils.Set
 }
 
 // 定义命令行格式
