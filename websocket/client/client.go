@@ -1,82 +1,62 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"github.com/gorilla/websocket"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
-var done chan interface{}
-var interrupt chan os.Signal
-
-func receiveHandler(connection *websocket.Conn) {
-	defer close(done)
+func receiveHandler(conn *websocket.Conn) {
 	for {
-		_, msg, err := connection.ReadMessage()
+		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("Error in receive:", err)
+			fmt.Println("Error in receive:", err)
 			return
 		}
-		log.Printf("Received: %s\n", msg)
+		fmt.Println("msg from server:", string(msg))
 	}
 }
 
 func main() {
-	done = make(chan interface{})    // Channel to indicate that the receiverHandler is done
-	interrupt = make(chan os.Signal) // Channel to listen for interrupt signal to terminate gracefully
-
-	signal.Notify(interrupt, os.Interrupt) // Notify the interrupt channel for SIGINT
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 
 	socketUrl := "ws://localhost:8080" + "/chat?id=1&token=xxx"
 	conn, _, err := websocket.DefaultDialer.Dial(socketUrl, nil)
 	if err != nil {
-		log.Fatal("Error connecting to Websocket Server:", err)
+		panic(err)
 	}
 	defer conn.Close()
 	go receiveHandler(conn)
 
-	// Our main loop for the client
-	// We send our relevant packets here
 	for {
 		select {
 		case <-time.After(3 * time.Second):
-			// Send an echo packet every second
 			msg := `
-{
-    "id": 2,
-    "cmd": 1,
-    "fromID": 1,
-    "destID": 1,
-    "msg": "hello world",
-    "msgType": 1,
-    "ackMsgID": 1
-}
+				{
+					"id": 2,
+					"cmd": 1,
+					"fromID": 1,
+					"destID": 1,
+					"msg": "hello from client!",
+					"msgType": 1,
+					"ackMsgID": 1
+				}
 `
 			err := conn.WriteMessage(websocket.TextMessage, []byte(msg))
 			if err != nil {
-				log.Println("Error during writing to websocket:", err)
+				fmt.Println("Error during writing to websocket:", err)
 				return
 			}
-
-		case <-interrupt:
-			// We received a SIGINT (Ctrl + C). Terminate gracefully...
-			log.Println("Received SIGINT interrupt signal. Closing all pending connections")
-
-			// Close our websocket connection
+		case <-quit:
+			fmt.Println("control + c pressed!")
 			err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
-				log.Println("Error during closing websocket:", err)
+				fmt.Println("Error during closing websocket:", err)
 				return
-			}
-
-			select {
-			case <-done:
-				log.Println("Receiver Channel Closed! Exiting....")
-			case <-time.After(time.Duration(1) * time.Second):
-				log.Println("Timeout in closing receiving channel. Exiting....")
 			}
 			return
 		}

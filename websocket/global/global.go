@@ -14,7 +14,7 @@ var ClientMap = make(map[int]*Node, 0)
 type Node struct {
 	Conn *websocket.Conn
 	// 并行转串行,
-	DataQueue chan []byte
+	DataQueue chan string
 	GroupSets utils.Set
 }
 

@@ -31,7 +31,7 @@ func Chat(ctx *gin.Context) {
 	// 获得 websocket 链接 conn
 	node := &global.Node{
 		Conn:      conn,
-		DataQueue: make(chan []byte, 50),
+		DataQueue: make(chan string, 10),
 		GroupSets: *utils.NewSet(),
 	}
 
@@ -51,7 +51,7 @@ func Chat(ctx *gin.Context) {
 	// 开启协程完成接收逻辑
 	go logic.Receive(node)
 
-	logic.SendMsg(userId, []byte("welcome!"))
+	logic.SendMsg(userId, "hello from server!")
 }
 
 func main() {
