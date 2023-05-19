@@ -68,6 +68,7 @@ func main() {
 }
 
 // todo: 业务逻辑拆分
+// todo: 添加 rpc客户端，处理消息转发业务
 // todo: 消息拆分 -- 单聊消息、群聊消息、系统消息
 // todo: clientMap 拆分
 // todo: 添加心跳处理逻辑
