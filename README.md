@@ -3,6 +3,15 @@
 #### 介绍
 im
 
+#### 参考文档
+[适合新手：从零开发一个IM服务端（基于Netty，有完整源码）](https://zhuanlan.zhihu.com/p/85758575)  
+
+[GlideIM-Golang实现的高性能的分布式IM
+](https://dengzii.com/go/5467dc73.html)  
+
+[跟着源码学IM(六)：手把手教你用Go快速搭建高性能、可扩展的IM系统](http://www.52im.net/thread-2988-1-1.html)
+
+
 #### 整体架构
 | 角色                      | 功能           |
 |:------------------------|:-------------|
