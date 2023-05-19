@@ -49,6 +49,6 @@ func main() {
 				clientConn = nil
 			}
 		}
-		time.Sleep(time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }

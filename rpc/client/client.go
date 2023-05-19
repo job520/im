@@ -4,11 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"im/rpc/service"
-	"log"
-
 	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/protocol"
+	"im/rpc/service"
+	"log"
+	"time"
 )
 
 func main() {
@@ -26,15 +26,19 @@ func main() {
 		B: 20,
 	}
 
-	// invoke once and set up the connection
-	reply := &service.Reply{}
-	err = c.Call(context.Background(), "Arith", "Mul", args, reply)
+	go func() {
+		for {
+			reply := &service.Reply{}
+			err = c.Call(context.Background(), "Arith", "Mul", args, reply)
 
-	if err != nil {
-		log.Fatalf("failed to call: %v", err)
-	}
+			if err != nil {
+				log.Fatalf("failed to call: %v", err)
+			}
 
-	log.Printf("%d * %d = %d", args.A, args.B, reply.C)
+			log.Printf("%d * %d = %d", args.A, args.B, reply.C)
+			time.Sleep(3 * time.Second)
+		}
+	}()
 
 	ch := make(chan *protocol.Message)
 	c.RegisterServerMessageChan(ch)
