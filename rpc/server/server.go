@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"github.com/smallnest/rpcx/server"
 	"im/rpc/service"
@@ -25,7 +24,6 @@ func (t *Arith) Mul(ctx context.Context, args *service.Args, reply *service.Repl
 }
 
 func main() {
-	flag.Parse()
 
 	ln, _ := net.Listen("tcp", ":9981")
 	go http.Serve(ln, nil)
@@ -33,7 +31,7 @@ func main() {
 	s := server.NewServer()
 	//s.RegisterName("Arith", new(service.Arith), "")
 	s.Register(new(Arith), "")
-	go s.Serve("tcp", *service.Addr)
+	go s.Serve("tcp", service.Addr)
 
 	for !connected {
 		time.Sleep(time.Second)

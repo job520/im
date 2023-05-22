@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/protocol"
@@ -10,7 +9,7 @@ import (
 	"time"
 )
 
-var Addr = flag.String("addr", "localhost:8972", "server address")
+var Addr = "localhost:8972"
 
 type Args struct {
 	A int
@@ -22,10 +21,9 @@ type Reply struct {
 }
 
 func RpcClient() {
-	flag.Parse()
 
 	c := client.NewClient(client.DefaultOption)
-	err := c.Connect("tcp", *Addr)
+	err := c.Connect("tcp", Addr)
 	if err != nil {
 		panic(err)
 	}

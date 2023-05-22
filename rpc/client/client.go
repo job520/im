@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/protocol"
@@ -12,10 +11,9 @@ import (
 )
 
 func main() {
-	flag.Parse()
 
 	c := client.NewClient(client.DefaultOption)
-	err := c.Connect("tcp", *service.Addr)
+	err := c.Connect("tcp", service.Addr)
 	if err != nil {
 		panic(err)
 	}
