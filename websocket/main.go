@@ -58,6 +58,7 @@ func Chat(ctx *gin.Context) {
 func main() {
 	r := gin.Default()
 	r.GET("/chat", Chat)
+	go logic.RpcClient()
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: r,
