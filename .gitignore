@@ -1,3 +1,4 @@
-/http/go.mod
-/rpc/go.mod
-/websocket/go.mod
+/http/go.sum
+/rpc/go.sum
+/websocket/go.sum
+/tcp/go.sum
