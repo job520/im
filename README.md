@@ -77,3 +77,12 @@ im
 3. etcd: 服务发现，负载均衡
 4. rabbitmq: 消息队列，消息去重，消息顺序保证
 ```
+
+#### TODO
+
+```text
+im/http: 登录/注册
+im/websocket: 登录后管理 websocket 状态（更新 redis，添加 userId 与 connectorId 的映射）
+im/websocket: 管理 rpc 状态（更新 redis，添加 client 与 server 的映射）
+im/rpc: 注册 server 到 etcd 中，并添加心跳检测
+```
