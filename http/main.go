@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/sirupsen/logrus"
 	"im/http/config"
-	"im/http/middleware"
 	"im/http/router"
 	"net/http"
 	"os"
@@ -17,7 +16,6 @@ func main() {
 	quit := make(chan os.Signal, 1) // 退出信号
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 	r := router.NewRouter()
-	r.Use(middleware.Test())
 	conf := config.Config
 	srv := &http.Server{
 		Addr:    conf.Server.Address,
