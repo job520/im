@@ -82,7 +82,7 @@ im
 #### TODO
 
 ```text
-X 搭建开发环境：redis、mongodb、rabbitmq、etcd
+O 搭建开发环境：redis、mongodb、rabbitmq、etcd
 X im/http: 登录/注册
 X im/websocket: 登录后管理 websocket 状态（更新 redis，添加 userId 与 connectorId 的映射）
 X im/websocket: 管理 rpc 状态（更新 redis，添加 client 与 server 的映射）
