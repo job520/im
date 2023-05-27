@@ -7,7 +7,7 @@ import (
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
-	groupOne := r.Group("/one")
-	groups.LoadOne(groupOne)
+	groupLogin := r.Group("/login")
+	groups.LoadLogin(groupLogin)
 	return r
 }

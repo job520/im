@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
+	"im/http/config"
 	"im/http/middleware"
 	"im/http/router"
 	"net/http"
@@ -16,13 +18,15 @@ func main() {
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 	r := router.NewRouter()
 	r.Use(middleware.Test())
+	conf := config.Config
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    conf.Server.Address,
 		Handler: r,
 	}
 	go shutdown(quit, srv)
+	logrus.Infof("server running at:%s \n", conf.Server.Address)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		panic(err)
+		logrus.Fatal(err)
 	}
 }
 
@@ -31,7 +35,7 @@ func shutdown(quit chan os.Signal, srv *http.Server) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		panic(err)
+		logrus.Fatal(err)
 	}
 	os.Exit(0)
 }
