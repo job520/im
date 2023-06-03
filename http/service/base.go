@@ -29,8 +29,8 @@ func Validate(param interface{}) error {
 }
 
 // 生成 jwt-token
-func GenerateJwtToken(encryptKey string, uid string, hours uint) (string, error) {
-	expire := time.Duration(hours)
+func GenerateJwtToken(encryptKey string, expireHours int, uid string) (string, error) {
+	expire := time.Duration(expireHours)
 	exp := time.Now().Add(time.Hour * expire).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"uid": uid,

@@ -25,3 +25,7 @@ etcd:
     port: 2379
     username: ""
     password: ""
+
+jwt:
+    encryptKey: "my jwt encrypt key"
+    expireHours: 24

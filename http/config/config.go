@@ -26,6 +26,7 @@ type config struct {
 	Redis    redis    `mapstructure:"redis"`
 	Rabbitmq rabbitmq `mapstructure:"rabbitmq"`
 	Etcd     etcd     `mapstructure:"etcd"`
+	Jwt      jwt      `mapstructure:"jwt"`
 }
 
 type server struct {
@@ -59,4 +60,9 @@ type etcd struct {
 	Port     int    `mapstructure:"port"`
 	Password string `mapstructure:"password"`
 	Username string `mapstructure:"username"`
+}
+
+type jwt struct {
+	EncryptKey  string `mapstructure:"encryptKey"`
+	ExpireHours int    `mapstructure:"expireHours"`
 }

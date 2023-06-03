@@ -39,7 +39,7 @@ func Register(ctx *gin.Context, username, password string) (bool, error) {
 	return true, nil
 }
 
-func Login(ctx *gin.Context, username, password string, platform int) (string, error) {
+func GetUserId(ctx *gin.Context, username, password string) (string, error) {
 	collection, err := driver.NewMongoCollection("user")
 	if err != nil {
 		return "", err
@@ -56,25 +56,7 @@ func Login(ctx *gin.Context, username, password string, platform int) (string, e
 	if err := userInfoResult.Decode(&userInfo); err != nil {
 		return "", err
 	}
-	return "", nil
-
-	//// 查询是否存在记录
-	//count, err := collection.CountDocuments(ctx, bson.M{
-	//	"username": username,
-	//	"password": password,
-	//})
-	//if err != nil {
-	//	return "", err
-	//}
-	//if count == 0 {
-	//	return "", fmt.Errorf("用户名或密码错误")
-	//}
-	//_, err = collection.InsertOne(ctx, User{
-	//	Username: username,
-	//	Password: password,
-	//})
-	//if err != nil {
-	//	return false, err
-	//}
-	//return true, nil
+	userIdByte, err := userInfo.Id.MarshalText()
+	userId := string(userIdByte)
+	return userId, nil
 }

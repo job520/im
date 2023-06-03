@@ -6,7 +6,7 @@ import (
 	"im/http/config"
 )
 
-func NewRedisClient(collectionName string) *redis.Client {
+func NewRedisClient() *redis.Client {
 	host := config.Config.Redis.Host
 	port := config.Config.Redis.Port
 	password := config.Config.Redis.Password
