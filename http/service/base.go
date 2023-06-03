@@ -29,19 +29,20 @@ func Validate(param interface{}) error {
 }
 
 // 生成 jwt-token
-func GenerateJwtToken(encryptKey string, expireHours int, uid string) (string, error) {
+func GenerateJwtToken(encryptKey string, expireHours int, uid string, platform int) (string, error) {
 	expire := time.Duration(expireHours)
 	exp := time.Now().Add(time.Hour * expire).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"uid": uid,
-		"exp": exp,
+		"uid":      uid,
+		"platform": platform,
+		"exp":      exp,
 	})
 	tokenString, err := token.SignedString([]byte(encryptKey))
 	return tokenString, err
 }
 
 // 解析 jwt-token
-func ParseJwtToken(encryptKey, tokenString string) (string, bool) {
+func ParseJwtToken(encryptKey, tokenString string) (string, int, bool) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -49,15 +50,15 @@ func ParseJwtToken(encryptKey, tokenString string) (string, bool) {
 		return []byte(encryptKey), nil
 	})
 	if err != nil {
-		return "", false
+		return "", 0, false
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if uid, ok := claims["uid"].(string); ok {
-			return uid, true
+			return uid, claims["platform"].(int), true
 		} else {
-			return "", false
+			return "", 0, false
 		}
 	} else {
-		return "", false
+		return "", 0, false
 	}
 }

@@ -18,14 +18,13 @@ func Login(ctx *gin.Context, username, password string, platform int) (string, e
 	if err != nil {
 		return "", err
 	}
-	rdb := driver.NewRedisClient()
-	redisKey := fmt.Sprintf("%s:%d", userId, platform)
-	// todo: 同设备登录挤下线
 	encryptKey := config.Config.Jwt.EncryptKey
 	expireHours := config.Config.Jwt.ExpireHours
 	// 生成 jwt-token
-	token, err := GenerateJwtToken(encryptKey, expireHours, userId)
+	token, err := GenerateJwtToken(encryptKey, expireHours, userId, platform)
 	// jwt-token 存入 redis
+	rdb := driver.NewRedisClient()
+	redisKey := fmt.Sprintf("%s:%d", userId, platform)
 	if err := rdb.Set(redisKey, token, time.Duration(expireHours)*time.Hour).Err(); err != nil {
 		return "", err
 	}
