@@ -44,7 +44,7 @@ type redis struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
 	Password string `mapstructure:"password"`
-	Database string `mapstructure:"database"`
+	Database int    `mapstructure:"database"`
 }
 
 type rabbitmq struct {
