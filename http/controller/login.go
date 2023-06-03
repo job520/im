@@ -39,10 +39,35 @@ func Register(ctx *gin.Context) {
 }
 
 func Login(ctx *gin.Context) {
-	name := ctx.Query("name")
-	result, err := service.Login(ctx, name)
-	if err != nil {
-		ctx.String(http.StatusInternalServerError, err.Error())
+	var param internal.LoginRequest
+	if err := ctx.ShouldBind(&param); err != nil {
+		ctx.JSON(http.StatusOK, internal.Response{
+			Ok:  false,
+			Msg: err.Error(),
+		})
+		return
 	}
-	ctx.String(http.StatusOK, result)
+	if err := service.Validate(param); err != nil {
+		ctx.JSON(http.StatusOK, internal.Response{
+			Ok:  false,
+			Msg: err.Error(),
+		})
+		return
+	}
+	token, err := service.Login(ctx, param.Username, param.Password, param.Platform)
+	if err != nil {
+		ctx.JSON(http.StatusOK, internal.Response{
+			Ok:  false,
+			Msg: err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, internal.Response{
+		Ok:  true,
+		Msg: "",
+		Data: map[string]string{
+			"token": token,
+		},
+	})
+	return
 }
