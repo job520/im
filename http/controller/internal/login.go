@@ -6,8 +6,8 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	Ok  bool   `json:"ok"`
-	Msg string `json:"msg"`
+	Ok  bool        `json:"ok"`
+	Msg interface{} `json:"msg"`
 }
 
 type LoginRequest struct {

@@ -16,6 +16,13 @@ func Register(ctx *gin.Context) {
 		})
 		return
 	}
+	if err := service.Validate(param); err != nil {
+		ctx.JSON(http.StatusOK, internal.RegisterResponse{
+			Ok:  false,
+			Msg: err.Error(),
+		})
+		return
+	}
 	ok, err := service.Register(ctx, param.Username, param.Password)
 	if err != nil {
 		ctx.JSON(http.StatusOK, internal.RegisterResponse{
