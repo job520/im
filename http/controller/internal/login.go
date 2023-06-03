@@ -5,11 +5,6 @@ type RegisterRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
-type RegisterResponse struct {
-	Ok  bool        `json:"ok"`
-	Msg interface{} `json:"msg"`
-}
-
 type LoginRequest struct {
 	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`

@@ -10,14 +10,14 @@ import (
 func Register(ctx *gin.Context) {
 	var param internal.RegisterRequest
 	if err := ctx.ShouldBind(&param); err != nil {
-		ctx.JSON(http.StatusOK, internal.RegisterResponse{
+		ctx.JSON(http.StatusOK, internal.Response{
 			Ok:  false,
 			Msg: err.Error(),
 		})
 		return
 	}
 	if err := service.Validate(param); err != nil {
-		ctx.JSON(http.StatusOK, internal.RegisterResponse{
+		ctx.JSON(http.StatusOK, internal.Response{
 			Ok:  false,
 			Msg: err.Error(),
 		})
@@ -25,13 +25,13 @@ func Register(ctx *gin.Context) {
 	}
 	ok, err := service.Register(ctx, param.Username, param.Password)
 	if err != nil {
-		ctx.JSON(http.StatusOK, internal.RegisterResponse{
+		ctx.JSON(http.StatusOK, internal.Response{
 			Ok:  false,
 			Msg: err.Error(),
 		})
 		return
 	}
-	ctx.JSON(http.StatusOK, internal.RegisterResponse{
+	ctx.JSON(http.StatusOK, internal.Response{
 		Ok:  ok,
 		Msg: "",
 	})
