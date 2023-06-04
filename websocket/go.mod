@@ -52,6 +52,7 @@ require (
 	github.com/quic-go/qtls-go1-20 v0.2.2 // indirect
 	github.com/quic-go/quic-go v0.34.0 // indirect
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/smallnest/quick v0.1.0 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect

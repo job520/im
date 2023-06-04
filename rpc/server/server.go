@@ -6,7 +6,6 @@ import (
 	"github.com/smallnest/rpcx/server"
 	"im/rpc/service"
 	"net"
-	"net/http"
 	_ "net/http/pprof"
 	"time"
 )
@@ -24,10 +23,6 @@ func (t *Arith) Mul(ctx context.Context, args *service.Args, reply *service.Repl
 }
 
 func main() {
-
-	ln, _ := net.Listen("tcp", ":9981")
-	go http.Serve(ln, nil)
-
 	s := server.NewServer()
 	//s.RegisterName("Arith", new(service.Arith), "")
 	s.Register(new(Arith), "")

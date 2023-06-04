@@ -32,6 +32,7 @@ func shutdown(quit chan os.Signal, srv *http.Server) {
 	<-quit
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	logrus.Info("server shutdown...")
 	if err := srv.Shutdown(ctx); err != nil {
 		logrus.Fatal(err)
 	}

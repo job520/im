@@ -1,15 +1,21 @@
 package main
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/sirupsen/logrus"
 	"im/websocket/logic"
 	"im/websocket/service"
 	"im/websocket/utils"
 	"im/websocket/variables"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
+	"time"
 )
 
 func Chat(ctx *gin.Context) {
@@ -56,6 +62,8 @@ func Chat(ctx *gin.Context) {
 }
 
 func main() {
+	quit := make(chan os.Signal, 1) // 退出信号
+	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 	r := gin.Default()
 	r.GET("/chat", Chat)
 	go logic.RpcClient()
@@ -63,9 +71,22 @@ func main() {
 		Addr:    ":8080",
 		Handler: r,
 	}
+	go shutdown(quit, srv)
+	logrus.Infof("server running at:%s \n", ":9091")
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		panic(err)
 	}
+}
+
+func shutdown(quit chan os.Signal, srv *http.Server) {
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	logrus.Info("server shutdown...")
+	if err := srv.Shutdown(ctx); err != nil {
+		logrus.Fatal(err)
+	}
+	os.Exit(0)
 }
 
 // todo: 业务逻辑拆分
