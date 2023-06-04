@@ -3,7 +3,10 @@ package logic
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	"im/websocket/config"
+	"im/websocket/driver"
 	"im/websocket/global"
+	"im/websocket/service"
 )
 
 // 发送逻辑
@@ -33,6 +36,17 @@ func Receive(node *global.Node) {
 	}
 }
 
-func CheckToken(userId int, token string) bool {
-	return true
+func CheckToken(token string) (string, bool) {
+	userId, platform, isLegal := service.ParseJwtToken(config.Config.Jwt.EncryptKey, token)
+	if !isLegal {
+		return "", false
+	}
+	// 查看 redis 中有没有保存 token
+	rdb := driver.NewRedisClient()
+	redisKey := fmt.Sprintf("%s:%d", userId, platform)
+	if res := rdb.Get(redisKey); res.Err() == nil {
+		return userId, true
+	} else {
+		return "", false
+	}
 }

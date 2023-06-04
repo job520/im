@@ -14,17 +14,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 )
 
 func Chat(ctx *gin.Context) {
-	id := ctx.Query("id")
-	token := ctx.Query("token")
-	userId, _ := strconv.Atoi(id)
+	token := ctx.GetHeader("token")
 	// 校验 token 是否合法
-	islegal := logic.CheckToken(userId, token)
+	userId, islegal := logic.CheckToken(token)
 
 	conn, err := (&websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
@@ -44,7 +41,7 @@ func Chat(ctx *gin.Context) {
 	}
 
 	// 获取用户全部群 ID
-	groupIDArr := []int{1, 2, 3}
+	groupIDArr := []string{"group1", "group2", "group3"}
 	for _, v := range groupIDArr {
 		node.GroupSets.Add(v)
 	}

@@ -32,6 +32,8 @@ func main() {
 	//s.RegisterName("Arith", new(service.Arith), "")
 	srv.Register(new(Arith), "")
 	go srv.Serve("tcp", service.Addr)
+	fmt.Printf("server running at: %s \n", service.Addr)
+
 	go shutdown(quit, srv)
 
 	for !connected {

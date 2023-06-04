@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	Addr     = "localhost:8972"
+	Addr     = "localhost:8901"
 	EtcdAddr = "localhost:2379"
 	BasePath = "/rpcx_test"
 )
