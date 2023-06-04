@@ -84,7 +84,9 @@ im
 ```text
 O 搭建开发环境：redis、mongodb、rabbitmq、etcd
 O im/http: 注册/登录
-X im/websocket: 登录后管理 websocket 状态（更新 redis，添加 userId 与 connectorId(可以使用 ip + 端口) 的映射）
-X im/websocket: 管理 rpc 状态（更新 redis，添加 client 与 server 的映射）
-X im/rpc: 注册 server 到 etcd 中，并添加心跳检测
+X im/websocket: 启动时注册 server 到 etcd 中，并定时更新 TTL
+X im/websocket: 登录后管理用户<-->websocket 服务器在线状态（redis，添加 userId 与 connectorId(可以使用 ip + 端口) 的映射，需要添加 TTL-心跳检测）
+X im/rpc: 启动时注册 server 到 etcd 中，并定时更新 TTL
+X im/websocket: 连接到 rpc server（从 etcd 中获取存活的 rpc server）
+X im/http: 网关服务，获取 websocket 连接地址（从 etcd 中获取存活的 websocket server）
 ```
