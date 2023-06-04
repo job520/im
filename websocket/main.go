@@ -5,10 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
+	"im/websocket/config"
+	"im/websocket/global"
 	"im/websocket/logic"
 	"im/websocket/service"
 	"im/websocket/utils"
-	"im/websocket/variables"
 	"log"
 	"net/http"
 	"os"
@@ -36,7 +37,7 @@ func Chat(ctx *gin.Context) {
 		return
 	}
 	// 获得 websocket 链接 conn
-	node := &variables.Node{
+	node := &global.Node{
 		Conn:      conn,
 		DataQueue: make(chan string, 10),
 		GroupSets: *utils.NewSet(),
@@ -48,9 +49,9 @@ func Chat(ctx *gin.Context) {
 		node.GroupSets.Add(v)
 	}
 
-	variables.RwLocker.Lock()
-	variables.ClientMap[userId] = node
-	variables.RwLocker.Unlock()
+	global.RwLocker.Lock()
+	global.ClientMap[userId] = node
+	global.RwLocker.Unlock()
 
 	// 开启协程处理发送逻辑
 	go logic.Send(node)
@@ -68,11 +69,11 @@ func main() {
 	r.GET("/chat", Chat)
 	go logic.RpcClient()
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    config.Config.Server.Address,
 		Handler: r,
 	}
 	go shutdown(quit, srv)
-	logrus.Infof("server running at:%s \n", ":9091")
+	logrus.Infof("server running at:%s \n", config.Config.Server.Address)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		panic(err)
 	}

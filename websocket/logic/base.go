@@ -3,11 +3,11 @@ package logic
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
-	"im/websocket/variables"
+	"im/websocket/global"
 )
 
 // 发送逻辑
-func Send(node *variables.Node) {
+func Send(node *global.Node) {
 	for {
 		select {
 		case data := <-node.DataQueue: // 收到客户端消息
@@ -21,7 +21,7 @@ func Send(node *variables.Node) {
 }
 
 // 接收逻辑
-func Receive(node *variables.Node) {
+func Receive(node *global.Node) {
 	for {
 		_, data, err := node.Conn.ReadMessage() // 监听服务端接收到的消息
 		if err != nil {

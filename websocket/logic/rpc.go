@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/protocol"
+	"im/websocket/config"
 	"log"
 	"time"
 )
-
-var Addr = "localhost:8972"
 
 type Args struct {
 	A int
@@ -23,7 +22,7 @@ type Reply struct {
 func RpcClient() {
 
 	c := client.NewClient(client.DefaultOption)
-	err := c.Connect("tcp", Addr)
+	err := c.Connect("tcp", config.Config.RpcServer.Address)
 	if err != nil {
 		panic(err)
 	}
