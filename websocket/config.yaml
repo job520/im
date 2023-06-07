@@ -2,7 +2,7 @@ server:
     address: ":8091"
 
 rpcServer:
-    address: "localhost:8901"
+    address: "localhost:50052"
 
 mongodb:
     host: "localhost"

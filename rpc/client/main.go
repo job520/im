@@ -1,18 +1,21 @@
-package logic
+package main
 
 import (
-	"context"
 	"fmt"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
-	"im/websocket/config"
-	"im/websocket/proto/hello"
+	"im/rpc/proto/hello"
 	"io"
 	"time"
 )
 
-func RpcClient() {
-	conn, err := grpc.Dial(config.Config.RpcServer.Address, grpc.WithInsecure())
+const (
+	Address = "127.0.0.1:50052"
+)
+
+func main() {
+	conn, err := grpc.Dial(Address, grpc.WithInsecure())
 	if err != nil {
 		grpclog.Fatalln(err)
 	}
