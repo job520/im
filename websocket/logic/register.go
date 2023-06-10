@@ -6,7 +6,7 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"im/websocket/config"
 	"im/websocket/driver"
-	"time"
+	"im/websocket/service"
 )
 
 func RegisterWsServer() {
@@ -28,16 +28,5 @@ func RegisterWsServer() {
 	if err != nil {
 		logrus.Errorf("put error %v", err)
 	}
-	go func() {
-		for {
-			// 续租
-			keepaliveResponse, err := client.KeepAliveOnce(ctx, leaseGrant.ID)
-			if err != nil {
-				logrus.Errorf("KeepAlive error %v", err)
-				return
-			}
-			logrus.Info(keepaliveResponse.TTL)
-			time.Sleep(time.Duration(timeout/2) * time.Second)
-		}
-	}()
+	go service.KeepAliveRegister(client, ctx, leaseGrant, timeout) // 续租
 }
