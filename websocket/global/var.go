@@ -8,13 +8,13 @@ import (
 
 var RwLocker sync.RWMutex
 
-// userid 和 Node 映射关系表
+// userId:platform 和 Node 映射关系表
 var ClientMap = make(map[string]*Node, 0)
 
 type Node struct {
 	Conn *websocket.Conn
 	// 并行转串行,
-	DataQueue chan string
+	MsgChan   chan string
 	GroupSets utils.Set
 }
 
@@ -27,7 +27,7 @@ const (
 
 type Message struct {
 	ID       int    `json:"id,omitempty" form:"id"`             // 消息ID
-	CMD      int    `json:"cmd,omitempty" form:"cmd"`           // 消息类型（单聊/群聊...）
+	CMD      int    `json:"cmd,omitempty" form:"cmd"`           // 消息类型（单聊/群聊/心跳）
 	FromID   string `json:"fromID,omitempty" form:"fromID"`     // 发送消息用户ID
 	DestID   string `json:"destID,omitempty" form:"destID"`     // 接收消息用户ID
 	Msg      string `json:"msg,omitempty" form:"msg"`           // 消息内容

@@ -3,37 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
-	"io"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 )
-
-func httpPost(url string, params url.Values) (string, error) {
-	resp, err := http.PostForm(url, params)
-	if resp != nil {
-		defer resp.Body.Close()
-	}
-	if err != nil {
-		return "", err
-	} else {
-		if resp.StatusCode == 200 {
-			var bodyReader io.ReadCloser = resp.Body
-			body, err := ioutil.ReadAll(bodyReader)
-			if err != nil {
-				return "", err
-			} else {
-				return string(body), nil
-			}
-		} else {
-			return "", fmt.Errorf("服务器异常")
-		}
-	}
-}
 
 func receive(conn *websocket.Conn) {
 	for {
@@ -51,7 +26,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 
 	// todo: 填写 token
-	token := ""
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODY0NjkyMzIsInBsYXRmb3JtIjoxLCJ1aWQiOiI2NDcyYmM1MjI4YmRjM2Q2MDBkNzJiMGQifQ.6U5fmhDDk8nPl5JWKR8TAOjec15UyxF_Bklnmq37OiE"
 
 	socketUrl := "ws://localhost:8091" + "/chat"
 	header := http.Header{}
@@ -69,10 +44,9 @@ func main() {
 			msg := `
 				{
 					"id": 2,
-					"cmd": 1,
-					"fromID": "user-1",
+					"cmd": 0,
 					"destID": "user-2",
-					"msg": "hello from client!",
+					"msg": "ping!",
 					"msgType": 1,
 					"ackMsgID": 1
 				}

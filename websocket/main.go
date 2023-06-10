@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
@@ -21,7 +22,7 @@ import (
 func Chat(ctx *gin.Context) {
 	token := ctx.GetHeader("token")
 	// 校验 token 是否合法
-	userId, islegal := logic.CheckToken(token)
+	userId, platform, islegal := logic.CheckToken(token)
 
 	conn, err := (&websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
@@ -36,7 +37,7 @@ func Chat(ctx *gin.Context) {
 	// 获得 websocket 链接 conn
 	node := &global.Node{
 		Conn:      conn,
-		DataQueue: make(chan string, 10),
+		MsgChan:   make(chan string, 10),
 		GroupSets: *utils.NewSet(),
 	}
 
@@ -47,16 +48,17 @@ func Chat(ctx *gin.Context) {
 	}
 
 	global.RwLocker.Lock()
-	global.ClientMap[userId] = node
+	mapKey := fmt.Sprintf("%s:%d", userId, platform)
+	global.ClientMap[mapKey] = node
 	global.RwLocker.Unlock()
 
 	// 开启协程处理发送逻辑
 	go logic.Send(node)
 
 	// 开启协程完成接收逻辑
-	go logic.Receive(node)
+	go logic.Receive(userId, platform, node)
 
-	service.ReceiveSingleMsg(userId, "hello from server!")
+	service.ReceiveSingleMsg(userId, platform, "hello from server!")
 }
 
 func main() {
