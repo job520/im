@@ -28,6 +28,8 @@ etcd:
     port: 2379
     username: ""
     password: ""
+    wsDir: "/websocket/"
+    rpcDir: "/rpc/"
 
 jwt:
     encryptKey: "my jwt encrypt key"

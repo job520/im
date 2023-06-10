@@ -64,7 +64,8 @@ func main() {
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 	r := gin.Default()
 	r.GET("/chat", Chat)
-	go logic.RpcClient()
+	logic.RegisterWsServer() // 服务注册
+	//go logic.RpcClient()
 	srv := &http.Server{
 		Addr:    config.Config.Server.Address,
 		Handler: r,

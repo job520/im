@@ -65,6 +65,8 @@ type etcd struct {
 	Port     int    `mapstructure:"port"`
 	Password string `mapstructure:"password"`
 	Username string `mapstructure:"username"`
+	WsDir    string `mapstructure:"wsDir"`
+	RpcDir   string `mapstructure:"rpcDir"`
 }
 
 type jwt struct {

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func NewEtcdClient(collectionName string) (*clientv3.Client, error) {
+func NewEtcdClient() (*clientv3.Client, error) {
 	host := config.Config.Etcd.Host
 	port := config.Config.Etcd.Port
 	username := config.Config.Etcd.Username
