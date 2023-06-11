@@ -1,58 +1,39 @@
 package main
 
 import (
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/reflection"
+	"im/rpc/config"
+	"im/rpc/logic"
 	"im/rpc/proto/hello"
-	"io"
 	"net"
-	"time"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-const (
-	Address = "127.0.0.1:50052"
-)
-
-type helloService struct {
-	requests []*hello.HelloResponse
-}
-
-var HelloService = helloService{}
-
-func (h helloService) SayHello(stream hello.Hello_SayHelloServer) error {
-	go func() {
-		for {
-			request := &hello.HelloResponse{}
-			request.Message = "hello from server!"
-			if err := stream.Send(request); err != nil {
-				fmt.Println("send err:", err)
-			}
-			time.Sleep(3 * time.Second)
-		}
-	}()
-	for {
-		msg, err := stream.Recv()
-		if err == io.EOF {
-			fmt.Println("receive done!")
-			return nil
-		}
-		if err != nil {
-			fmt.Println("receive error:", err)
-			return err
-		}
-		fmt.Println("msg from client:", msg.Name)
-	}
-}
 func main() {
-	listen, err := net.Listen("tcp", Address)
+	quit := make(chan os.Signal, 1) // 退出信号
+	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
+	listen, err := net.Listen("tcp", config.Config.Server.Address)
 	if err != nil {
 		grpclog.Fatalf("Failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
-	hello.RegisterHelloServer(s, HelloService)
-	reflection.Register(s) // 注册到grpcurl
-	fmt.Println("Listen on " + Address)
-	s.Serve(listen)
+	srv := grpc.NewServer()
+	go shutdown(quit, srv)
+	helloService := logic.HelloService{}
+	hello.RegisterHelloServer(srv, helloService)
+	reflection.Register(srv)  // 注册到grpcurl
+	logic.RegisterRpcServer() // 服务注册
+	logrus.Info("Listen on " + config.Config.Server.Address)
+	srv.Serve(listen)
+}
+
+func shutdown(quit chan os.Signal, srv *grpc.Server) {
+	<-quit
+	logrus.Info("server shutdown...")
+	srv.Stop()
+	os.Exit(0)
 }

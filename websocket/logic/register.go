@@ -6,6 +6,7 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"im/websocket/config"
 	"im/websocket/driver"
+	"im/websocket/global"
 	"im/websocket/service"
 )
 
@@ -14,7 +15,7 @@ func RegisterWsServer() {
 	if err != nil {
 		logrus.Errorf("etcd init error,%v\n", err)
 	}
-	key := config.Config.Etcd.WsDir + config.Config.Server.Address
+	key := global.EtcdWsDir + config.Config.Server.Address
 	value := config.Config.Server.Address
 	timeout := int64(10)
 	ctx := context.Background()

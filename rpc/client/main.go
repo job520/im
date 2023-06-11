@@ -1,21 +1,18 @@
 package main
 
 import (
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
+	"im/rpc/config"
 	"im/rpc/proto/hello"
 	"io"
 	"time"
 )
 
-const (
-	Address = "127.0.0.1:50052"
-)
-
 func main() {
-	conn, err := grpc.Dial(Address, grpc.WithInsecure())
+	conn, err := grpc.Dial(config.Config.Server.Address, grpc.WithInsecure())
 	if err != nil {
 		grpclog.Fatalln(err)
 	}
@@ -24,7 +21,7 @@ func main() {
 	ctx := context.Background()
 	stream, err := c.SayHello(ctx)
 	if err != nil {
-		fmt.Println("create stream error:", err)
+		logrus.Error("create stream error:", err)
 	}
 	go func() {
 		for {
@@ -39,12 +36,12 @@ func main() {
 	for {
 		msg, err := stream.Recv()
 		if err == io.EOF {
-			fmt.Println("receive done!")
+			logrus.Info("receive done!")
 			break
 		}
 		if err != nil {
-			fmt.Println("receive error:", err)
+			logrus.Error("receive error:", err)
 		}
-		fmt.Println("msg from server:", msg.Message)
+		logrus.Info("msg from server:", msg.Message)
 	}
 }

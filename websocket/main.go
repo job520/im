@@ -66,13 +66,13 @@ func main() {
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 	r := gin.Default()
 	r.GET("/chat", Chat)
-	logic.RegisterWsServer() // 服务注册
-	//go logic.RpcClient()
 	srv := &http.Server{
 		Addr:    config.Config.Server.Address,
 		Handler: r,
 	}
 	go shutdown(quit, srv)
+	logic.RegisterWsServer() // 服务注册
+	//go logic.RpcClient()
 	logrus.Infof("server running at:%s \n", config.Config.Server.Address)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		panic(err)
