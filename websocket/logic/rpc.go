@@ -3,8 +3,8 @@ package logic
 import (
 	"context"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/grpclog"
 	"im/websocket/config"
 	"im/websocket/proto/hello"
 	"io"
@@ -12,9 +12,11 @@ import (
 )
 
 func RpcClient() {
-	conn, err := grpc.Dial(config.Config.RpcServer.Address, grpc.WithInsecure())
+	address := config.Config.RpcServer.Address
+	logrus.Info("rpc server address:", address)
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
-		grpclog.Fatalln(err)
+		logrus.Error(err)
 	}
 	defer conn.Close()
 	c := hello.NewHelloClient(conn)
@@ -41,7 +43,10 @@ func RpcClient() {
 		}
 		if err != nil {
 			fmt.Println("receive error:", err)
+			break
 		}
-		fmt.Println("msg from server:", msg.Message)
+		if msg != nil {
+			fmt.Println("msg from server:", msg.Message)
+		}
 	}
 }

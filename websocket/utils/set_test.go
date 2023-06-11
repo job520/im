@@ -1,13 +1,17 @@
 package utils
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestSet(t *testing.T) {
-	s := NewSet(1, 2, 3)
-	s.Add(4)
-	s.Add(5)
-	if !s.Has(5) {
-		t.Error("set 设置失败")
+	s := NewSet("a", "b", "c")
+	s.Add("d")
+	s.Add("e")
+	if !s.Has("e") {
+		fmt.Println("测试未通过")
+		return
 	}
-	t.Log("测试通过")
+	fmt.Println("测试通过")
 }

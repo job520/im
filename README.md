@@ -13,15 +13,15 @@ im
 
 
 #### 整体架构
-| 角色                                           | 功能                  |
-|:---------------------------------------------|:--------------------|
-| http 服务器                                     | 处理登录、文件上传等业务        |
-| websocket 服务器 + rpc 客户端（与 rpc服务端增加心跳检测与服务发现） | 处理聊天业务              |
-| rpc 服务器（与 rpc客户端增加心跳检测与服务发现）                 | 处理消息转发业务            |
-| redis 状态管理服务器                                | 管理用户 & rpc 服务器的在线状态 |
-| mongodb                                      | 管理离线消息              |
-| rabbitmq 消息队列服务器                             | 防止消息重复              |
-| etcd 服务发现与负载均衡服务器                            | 服务发现&负载均衡           |
+| 角色                                           | 机器数量 | 功能                  |
+|:---------------------------------------------|:-----|:--------------------|
+| http 服务器                                     | 多台   | 处理登录、文件上传等业务        |
+| websocket 服务器 + rpc 客户端（与 rpc服务端增加心跳检测与服务发现） | 多台   | 处理聊天业务              |
+| rpc 服务器（与 rpc客户端增加心跳检测与服务发现）                 | 1台   | 处理消息转发业务            |
+| redis 状态管理服务器                                | -    | 管理用户 & rpc 服务器的在线状态 |
+| mongodb                                      | -    | 管理离线消息              |
+| rabbitmq 消息队列服务器                             | -    | 防止消息重复              |
+| etcd 服务发现与负载均衡服务器                            | -    | 服务发现&负载均衡           |
 
 
 #### 项目计划
@@ -87,6 +87,7 @@ O im/http: 注册/登录
 O im/websocket: 启动时注册 server 到 etcd 中，并定时更新 TTL
 O im/websocket: 建立连接后管理 【 userId:platform -> wsServer 】 在线状态（redis，添加 userId 与 connectorId(可以使用 ip + 端口) 的映射，需要与 websocket 客户端添加 TTL-心跳检测）
 O im/rpc: 启动时注册 server 到 etcd 中，并定时更新 TTL
-X im/websocket: 连接到 rpc server（从 etcd 中获取存活的 rpc server）
+O im/websocket: 启动时连接到 rpc server（transfer 服务器）
+X im/rpc: 记录与 rpc客户端（指 websocket 服务器）之间的连接句柄
 X im/http: 网关服务，获取 websocket 连接地址（从 etcd 中获取存活的 websocket server）
 ```
