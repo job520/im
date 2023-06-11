@@ -25,7 +25,7 @@ func Login(ctx *gin.Context, username, password string, platform int) (string, e
 	token, err := GenerateJwtToken(encryptKey, expireHours, userId, platform)
 	// jwt-token 存入 redis
 	rdb := driver.NewRedisClient()
-	redisKey := fmt.Sprintf(global.JwtKey, userId, platform)
+	redisKey := fmt.Sprintf(global.RedisJwtKey, userId, platform)
 	if err := rdb.Set(redisKey, token, time.Duration(expireHours)*time.Hour).Err(); err != nil {
 		return "", err
 	}

@@ -1,5 +1,8 @@
 package global
 
 const (
-	JwtKey = "jwt:%s:%d" // jwt:userId:platform
+	RedisJwtKey    = "jwt:%s:%d"    // jwt:userId:platform
+	RedisStatusKey = "status:%s:%d" // status:userId:platform
+	EtcdWsDir      = "/websocket/"
+	EtcdRpcDir     = "/rpc/"
 )

@@ -16,7 +16,7 @@ type userStatus struct {
 
 func NewUserStatus(userId string, platform int, wsServer string) userStatus {
 	rdb := driver.NewRedisClient()
-	redisKey := fmt.Sprintf(global.StatusKey, userId, platform)
+	redisKey := fmt.Sprintf(global.RedisStatusKey, userId, platform)
 	userStatusObj := userStatus{
 		Rdb:      rdb,
 		RedisKey: redisKey,
