@@ -25,8 +25,7 @@ func main() {
 	go shutdown(quit, srv)
 	transferService := logic.TransferService{}
 	transfer.RegisterTransferServer(srv, transferService)
-	reflection.Register(srv)  // 注册到grpcurl
-	logic.RegisterRpcServer() // 服务注册
+	reflection.Register(srv) // 注册到grpcurl
 	logrus.Info("Listen on " + config.Config.Server.Address)
 	srv.Serve(listen)
 }
