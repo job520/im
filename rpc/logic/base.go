@@ -7,21 +7,21 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"im/rpc/config"
 	"im/rpc/driver"
+	"im/rpc/generate/transfer"
 	"im/rpc/global"
-	"im/rpc/proto/hello"
 	"io"
 	"time"
 )
 
-type HelloService struct {
-	requests []*hello.HelloResponse
+type TransferService struct {
+	requests []*transfer.PingResponse
 }
 
-func (h HelloService) SayHello(stream hello.Hello_SayHelloServer) error {
+func (t TransferService) Ping(stream transfer.Transfer_PingServer) error {
 	go func() {
 		for {
-			request := &hello.HelloResponse{}
-			request.Message = "hello from server!"
+			request := &transfer.PingResponse{}
+			request.Message = "pong!"
 			if err := stream.Send(request); err != nil {
 				fmt.Println("send err:", err)
 			}
@@ -38,7 +38,43 @@ func (h HelloService) SayHello(stream hello.Hello_SayHelloServer) error {
 			fmt.Println("receive error:", err)
 			return err
 		}
-		fmt.Println("msg from client:", msg.Name)
+		fmt.Printf("connector is: %s ,message is: %s .\n", msg.Connector, msg.Message)
+	}
+}
+
+func (t TransferService) Transfer(stream transfer.Transfer_TransferServer) error {
+	go func() {
+		for {
+			request := &transfer.TransferRequestAndResponse{
+				FromConnector: "xx:80",
+				ToConnector:   "xx:81",
+				Data: &transfer.Data{
+					Id:         0,
+					Cmd:        0,
+					FromId:     "",
+					DestId:     "",
+					Msg:        "",
+					MsgType:    0,
+					AckMsgType: 0,
+				},
+			}
+			if err := stream.Send(request); err != nil {
+				fmt.Println("send err:", err)
+			}
+			time.Sleep(3 * time.Second)
+		}
+	}()
+	for {
+		msg, err := stream.Recv()
+		if err == io.EOF {
+			fmt.Println("receive done!")
+			return nil
+		}
+		if err != nil {
+			fmt.Println("receive error:", err)
+			return err
+		}
+		fmt.Printf("msg received: %v .\n", msg)
 	}
 }
 

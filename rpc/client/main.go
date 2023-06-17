@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"im/rpc/config"
-	"im/rpc/proto/hello"
+	"im/rpc/generate/transfer"
 	"io"
 	"time"
 )
@@ -17,16 +17,17 @@ func main() {
 		grpclog.Fatalln(err)
 	}
 	defer conn.Close()
-	c := hello.NewHelloClient(conn)
+	c := transfer.NewTransferClient(conn)
 	ctx := context.Background()
-	stream, err := c.SayHello(ctx)
+	stream, err := c.Ping(ctx)
 	if err != nil {
 		logrus.Error("create stream error:", err)
 	}
 	go func() {
 		for {
-			if err := stream.Send(&hello.HelloRequest{
-				Name: "hello from client!",
+			if err := stream.Send(&transfer.PingRequest{
+				Connector: ":80",
+				Message:   "ping!",
 			}); err != nil {
 				return
 			}

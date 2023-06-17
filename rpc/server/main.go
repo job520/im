@@ -6,8 +6,8 @@ import (
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/reflection"
 	"im/rpc/config"
+	"im/rpc/generate/transfer"
 	"im/rpc/logic"
-	"im/rpc/proto/hello"
 	"net"
 	"os"
 	"os/signal"
@@ -23,8 +23,8 @@ func main() {
 	}
 	srv := grpc.NewServer()
 	go shutdown(quit, srv)
-	helloService := logic.HelloService{}
-	hello.RegisterHelloServer(srv, helloService)
+	transferService := logic.TransferService{}
+	transfer.RegisterTransferServer(srv, transferService)
 	reflection.Register(srv)  // 注册到grpcurl
 	logic.RegisterRpcServer() // 服务注册
 	logrus.Info("Listen on " + config.Config.Server.Address)
