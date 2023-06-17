@@ -88,6 +88,6 @@ O im/websocket: 启动时注册 server 到 etcd 中，并定时更新 TTL
 O im/websocket: 建立连接后管理 【 userId:platform -> wsServer 】 在线状态（redis，添加 userId 与 connectorId(可以使用 ip + 端口) 的映射，需要与 websocket 客户端添加 TTL-心跳检测）
 O im/rpc: 启动时注册 server 到 etcd 中，并定时更新 TTL
 O im/websocket: 启动时连接到 rpc server（transfer 服务器）
-X im/rpc: 记录与 rpc客户端（指 websocket 服务器）之间的连接句柄（map[ip:port]conn）
+O im/rpc: 记录与 rpc客户端（指 websocket 服务器）之间的连接句柄（map[ip:port]conn）
 X im/http: 网关服务，获取 websocket 连接地址（从 etcd 中获取存活的 websocket server）
 ```
