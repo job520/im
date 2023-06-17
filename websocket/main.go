@@ -9,9 +9,6 @@ import (
 	"im/websocket/config"
 	"im/websocket/global"
 	"im/websocket/logic"
-	"im/websocket/service"
-	"im/websocket/utils"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -31,34 +28,25 @@ func Chat(ctx *gin.Context) {
 	}).Upgrade(ctx.Writer, ctx.Request, nil)
 
 	if err != nil {
-		log.Println(err.Error())
+		logrus.Info("upgrade error:", err.Error())
 		return
 	}
-	// 获得 websocket 链接 conn
-	node := &global.Node{
-		Conn:      conn,
-		MsgChan:   make(chan string, 10),
-		GroupSets: *utils.NewSet(),
-	}
 
-	// 获取用户全部群 ID
-	groupIDArr := []string{"group1", "group2", "group3"}
-	for _, v := range groupIDArr {
-		node.GroupSets.Add(v)
-	}
-
-	global.RwLocker.Lock()
+	global.ConnectMap.Lock()
 	mapKey := fmt.Sprintf("%s:%d", userId, platform)
-	global.ClientMap[mapKey] = node
-	global.RwLocker.Unlock()
+	global.ConnectMap.ClientMap[mapKey] = conn
+	global.ConnectMap.Unlock()
 
-	// 开启协程处理发送逻辑
-	go logic.Send(node)
+	for {
+		_, data, err := conn.ReadMessage()
+		if err != nil {
+			logrus.Info("read from client error:", err.Error())
+			return
+		}
+		logrus.Info("message from client:", string(data))
+		logic.Dispatch(userId, platform, string(data)) // 消息处理
+	}
 
-	// 开启协程完成接收逻辑
-	go logic.Receive(userId, platform, node)
-
-	service.ReceiveSingleMsg(userId, platform, "hello from server!")
 }
 
 func main() {

@@ -10,7 +10,7 @@ import (
 )
 
 // 后端调度逻辑处理
-func dispatch(userId string, platform int, data string) {
+func Dispatch(userId string, platform int, data string) {
 	msg := global.Message{}
 	err := json.Unmarshal([]byte(data), &msg)
 	if err != nil {
@@ -30,6 +30,6 @@ func dispatch(userId string, platform int, data string) {
 	case global.SingleMsg:
 		service.ReceiveSingleMsg(msg.DestID, platform, "hello from server!")
 	case global.GroupMsg:
-		service.ReceiveGroupMsg(msg.DestID, "hello from server!")
+		// todo: 处理群消息
 	}
 }

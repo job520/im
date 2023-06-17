@@ -2,20 +2,16 @@ package global
 
 import (
 	"github.com/gorilla/websocket"
-	"im/websocket/utils"
 	"sync"
 )
 
-var RwLocker sync.RWMutex
+type connectMap struct {
+	ClientMap map[string]*websocket.Conn
+	sync.Mutex
+}
 
-// userId:platform 和 Node 映射关系表
-var ClientMap = make(map[string]*Node)
-
-type Node struct {
-	Conn *websocket.Conn
-	// 并行转串行,
-	MsgChan   chan string
-	GroupSets utils.Set
+var ConnectMap = connectMap{
+	ClientMap: make(map[string]*websocket.Conn),
 }
 
 // 定义命令行格式
