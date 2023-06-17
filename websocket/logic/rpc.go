@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/metadata"
 	"im/websocket/config"
 	"im/websocket/generate/transfer"
 	"io"
@@ -19,8 +20,11 @@ func RpcClient() {
 		grpclog.Fatalln(err)
 	}
 	defer srv.Close()
+	mdClient := metadata.Pairs(
+		"fromConnector", ":80",
+	)
+	ctx := metadata.NewOutgoingContext(context.Background(), mdClient)
 	c := transfer.NewTransferClient(srv)
-	ctx := context.Background()
 	conn, err := c.Chat(ctx)
 	if err != nil {
 		logrus.Error("create stream error:", err)
