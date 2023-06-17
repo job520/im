@@ -8,8 +8,10 @@ import (
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
-	r.Use(middleware.Test())
 	groupLogin := r.Group("/login")
 	groups.LoadLogin(groupLogin)
+	gatewayGroup := r.Group("/gateway")
+	gatewayGroup.Use(middleware.Test())
+	groups.LoadGateWay(gatewayGroup)
 	return r
 }

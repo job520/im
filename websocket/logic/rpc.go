@@ -2,11 +2,11 @@ package logic
 
 import (
 	"context"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/grpclog"
 	"im/websocket/config"
-	"im/websocket/proto/hello"
+	"im/websocket/generate/transfer"
 	"io"
 	"time"
 )
@@ -14,21 +14,22 @@ import (
 func RpcClient() {
 	address := config.Config.RpcServer.Address
 	logrus.Info("rpc server address:", address)
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	srv, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
-		logrus.Error(err)
+		grpclog.Fatalln(err)
 	}
-	defer conn.Close()
-	c := hello.NewHelloClient(conn)
+	defer srv.Close()
+	c := transfer.NewTransferClient(srv)
 	ctx := context.Background()
-	stream, err := c.SayHello(ctx)
+	conn, err := c.Chat(ctx)
 	if err != nil {
-		fmt.Println("create stream error:", err)
+		logrus.Error("create stream error:", err)
 	}
 	go func() {
 		for {
-			if err := stream.Send(&hello.HelloRequest{
-				Name: "hello from client!",
+			if err := conn.Send(&transfer.ChatRequestAndResponse{
+				FromConnector: ":80",
+				Message:       "ping!",
 			}); err != nil {
 				return
 			}
@@ -36,17 +37,14 @@ func RpcClient() {
 		}
 	}()
 	for {
-		msg, err := stream.Recv()
+		msg, err := conn.Recv()
 		if err == io.EOF {
-			fmt.Println("receive done!")
+			logrus.Info("receive done!")
 			break
 		}
 		if err != nil {
-			fmt.Println("receive error:", err)
-			break
+			logrus.Error("receive error:", err)
 		}
-		if msg != nil {
-			fmt.Println("msg from server:", msg.Message)
-		}
+		logrus.Info("msg from server:", msg.Message)
 	}
 }
