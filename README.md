@@ -90,8 +90,10 @@ O im/rpc: 启动时注册 server 到 etcd 中，并定时更新 TTL
 O im/websocket: 启动时连接到 rpc server（transfer 服务器）
 O im/rpc: 记录与 rpc客户端（指 websocket 服务器）之间的连接句柄（map[ip:port]conn）
 O im/http: 网关服务，获取 websocket 连接地址（从 etcd 中获取存活的 websocket server）
-X im/websocket: 消息模型数据结构简化
-X im/websocket: 消息转发（websocket服务器 -> rpc服务器 -> websocket服务器）
+O im/websocket: 消息模型数据结构简化
+O im/rpc: 仿照 im/websocket 服务器处理消息逻辑
+X im/websocket: 消息转发（websocket服务器 -> rpc服务器）
+X im/rpc: 消息转发（rpc服务器 -> websocket服务器）
 X im/websocket: 处理心跳逻辑
 X im/websocket: 处理群消息逻辑
 ```

@@ -5,6 +5,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/metadata"
 	"im/rpc/config"
 	"im/rpc/generate/transfer"
 	"io"
@@ -17,8 +18,11 @@ func main() {
 		grpclog.Fatalln(err)
 	}
 	defer srv.Close()
+	mdClient := metadata.Pairs(
+		"fromConnector", ":80",
+	)
+	ctx := metadata.NewOutgoingContext(context.Background(), mdClient)
 	c := transfer.NewTransferClient(srv)
-	ctx := context.Background()
 	conn, err := c.Chat(ctx)
 	if err != nil {
 		logrus.Error("create stream error:", err)

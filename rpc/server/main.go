@@ -23,7 +23,6 @@ func main() {
 	}
 	srv := grpc.NewServer()
 	go shutdown(quit, srv)
-	go logic.HeartBeat() // 发送心跳
 	transferService := logic.TransferService{}
 	transfer.RegisterTransferServer(srv, transferService)
 	reflection.Register(srv) // 注册到grpcurl
