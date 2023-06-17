@@ -11,19 +11,19 @@ type TransferService struct {
 	requests []*transfer.PingResponse
 }
 
-func (t TransferService) Ping(stream transfer.Transfer_PingServer) error {
+func (t TransferService) Ping(conn transfer.Transfer_PingServer) error {
 	go func() {
 		for {
 			request := &transfer.PingResponse{}
 			request.Message = "pong!"
-			if err := stream.Send(request); err != nil {
+			if err := conn.Send(request); err != nil {
 				fmt.Println("send err:", err)
 			}
 			time.Sleep(3 * time.Second)
 		}
 	}()
 	for {
-		msg, err := stream.Recv()
+		msg, err := conn.Recv()
 		if err == io.EOF {
 			fmt.Println("receive done!")
 			return nil
@@ -36,7 +36,7 @@ func (t TransferService) Ping(stream transfer.Transfer_PingServer) error {
 	}
 }
 
-func (t TransferService) Transfer(stream transfer.Transfer_TransferServer) error {
+func (t TransferService) Transfer(conn transfer.Transfer_TransferServer) error {
 	go func() {
 		for {
 			request := &transfer.TransferRequestAndResponse{
@@ -52,14 +52,14 @@ func (t TransferService) Transfer(stream transfer.Transfer_TransferServer) error
 					AckMsgType: 0,
 				},
 			}
-			if err := stream.Send(request); err != nil {
+			if err := conn.Send(request); err != nil {
 				fmt.Println("send err:", err)
 			}
 			time.Sleep(3 * time.Second)
 		}
 	}()
 	for {
-		msg, err := stream.Recv()
+		msg, err := conn.Recv()
 		if err == io.EOF {
 			fmt.Println("receive done!")
 			return nil
