@@ -12,22 +12,22 @@ import (
 )
 
 func main() {
-	conn, err := grpc.Dial(config.Config.Server.Address, grpc.WithInsecure())
+	srv, err := grpc.Dial(config.Config.Server.Address, grpc.WithInsecure())
 	if err != nil {
 		grpclog.Fatalln(err)
 	}
-	defer conn.Close()
-	c := transfer.NewTransferClient(conn)
+	defer srv.Close()
+	c := transfer.NewTransferClient(srv)
 	ctx := context.Background()
-	stream, err := c.Ping(ctx)
+	conn, err := c.Chat(ctx)
 	if err != nil {
 		logrus.Error("create stream error:", err)
 	}
 	go func() {
 		for {
-			if err := stream.Send(&transfer.PingRequest{
-				Connector: ":80",
-				Message:   "ping!",
+			if err := conn.Send(&transfer.ChatRequestAndResponse{
+				FromConnector: ":80",
+				Message:       "ping!",
 			}); err != nil {
 				return
 			}
@@ -35,7 +35,7 @@ func main() {
 		}
 	}()
 	for {
-		msg, err := stream.Recv()
+		msg, err := conn.Recv()
 		if err == io.EOF {
 			logrus.Info("receive done!")
 			break

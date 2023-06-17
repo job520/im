@@ -2,20 +2,14 @@ syntax = "proto3";
 package hello;
 option go_package = ".;transfer";
 service Transfer {
-    rpc Ping(stream PingRequest) returns (stream PingResponse) {}
-    rpc Transfer(stream TransferRequestAndResponse) returns (stream TransferRequestAndResponse) {}
+    rpc Chat(stream ChatRequestAndResponse) returns (stream ChatRequestAndResponse) {}
 }
-message PingRequest {
-    string connector = 1;
-    string message = 2;
-}
-message PingResponse {
-    string message = 1;
-}
-message TransferRequestAndResponse {
+message ChatRequestAndResponse {
     string from_connector = 1;
     string to_connector = 2;
-    Data data = 3;
+    int32 msg_type = 3;  // rpc 服务器消息类型（心跳/转发）
+    string message = 4;  // 消息体
+    Data data = 5;
 }
 message Data {
     int32 id = 1;  // 消息ID
