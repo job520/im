@@ -60,7 +60,7 @@ func main() {
 	}
 	go shutdown(quit, srv)
 	logic.RegisterWsServer() // 服务注册
-	logic.RpcClient()        // 连接到 rpc 服务器（transfer 服务器）
+	go logic.RpcClient()     // 连接到 rpc 服务器（transfer 服务器）
 	logrus.Infof("server running at:%s \n", config.Config.Server.Address)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		panic(err)

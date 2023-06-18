@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc/metadata"
 	"im/websocket/config"
 	"im/websocket/generate/transfer"
+	"im/websocket/global"
 	"io"
-	"time"
 )
 
 func RpcClient() {
@@ -29,17 +29,20 @@ func RpcClient() {
 	if err != nil {
 		logrus.Error("create stream error:", err)
 	}
+
+	// 发送消息
 	go func() {
 		for {
-			if err := conn.Send(&transfer.ChatRequestAndResponse{
-				FromConnector: ":80",
-				Message:       "ping!",
-			}); err != nil {
-				return
+			select {
+			case msg := <-global.RpcMsgChan:
+				if err := conn.Send(msg); err != nil {
+					return
+				}
 			}
-			time.Sleep(3 * time.Second)
 		}
 	}()
+
+	// 接收消息
 	for {
 		msg, err := conn.Recv()
 		if err == io.EOF {

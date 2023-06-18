@@ -2,6 +2,7 @@ package global
 
 import (
 	"github.com/gorilla/websocket"
+	"im/websocket/generate/transfer"
 	"sync"
 )
 
@@ -30,3 +31,10 @@ type Message struct {
 	MsgType  int    `json:"msgType,omitempty" form:"msgType"`   // 消息自定义类型（文本消息/图片消息/语音消息...）
 	AckMsgID int    `json:"ackMsgID,omitempty" form:"ackMsgID"` // 回复消息ID
 }
+
+var RpcMsgChan = make(chan *transfer.ChatRequestAndResponse)
+
+const (
+	RpcMsgTypeHeartBeat int = iota
+	RpcMsgTypeTransfer
+)
