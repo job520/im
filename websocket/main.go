@@ -41,7 +41,6 @@ func Chat(ctx *gin.Context) {
 		_, data, err := conn.ReadMessage()
 		if err != nil {
 			logrus.Info("read from client error:", err.Error())
-			return
 		}
 		logrus.Info("message from client:", string(data))
 		logic.Dispatch(userId, platform, string(data)) // 消息处理

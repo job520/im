@@ -19,13 +19,13 @@ func Dispatch(userId string, platform int, data string) {
 	}
 	msg.FromID = userId
 	fmt.Println("msg from client:", msg.Msg)
+	// 更新 userId:platform -> wsServer 状态
+	userStatus := service.NewUserStatus(userId, platform, config.Config.Server.Address)
+	if err := userStatus.Online(20); err != nil {
+		logrus.Errorf("ping error:%s\n", err.Error())
+	}
 	switch msg.CMD {
 	case global.HeartMsg:
-		// 更新 userId:platform -> wsServer 状态
-		userStatus := service.NewUserStatus(userId, platform, config.Config.Server.Address)
-		if err := userStatus.Online(20); err != nil {
-			logrus.Errorf("ping error:%s\n", err.Error())
-		}
 		service.ReceiveSingleMsg(userId, platform, "pong!")
 	case global.SingleMsg:
 		service.ReceiveSingleMsg(msg.DestID, platform, "hello from server!")

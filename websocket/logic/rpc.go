@@ -21,7 +21,7 @@ func RpcClient() {
 	}
 	defer srv.Close()
 	mdClient := metadata.Pairs(
-		"fromConnector", ":80",
+		"fromConnector", config.Config.Server.Address,
 	)
 	ctx := metadata.NewOutgoingContext(context.Background(), mdClient)
 	c := transfer.NewTransferClient(srv)
@@ -53,5 +53,11 @@ func RpcClient() {
 			logrus.Error("receive error:", err)
 		}
 		logrus.Info("msg from server:", msg.Message)
+		switch msg.MsgType {
+		// 消息转发
+		case int32(global.RpcMsgTypeTransfer):
+			data := msg.Data
+			logrus.Infof("收到转发消息：%v\n", data)
+		}
 	}
 }

@@ -17,7 +17,7 @@ func wsClient() {
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 
 	// todo: 填写 token
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODY0NjkyMzIsInBsYXRmb3JtIjoxLCJ1aWQiOiI2NDcyYmM1MjI4YmRjM2Q2MDBkNzJiMGQifQ.6U5fmhDDk8nPl5JWKR8TAOjec15UyxF_Bklnmq37OiE"
+	token := ""
 
 	socketUrl := "ws://localhost:8091" + "/chat"
 	header := http.Header{}
@@ -36,16 +36,15 @@ func wsClient() {
 				err := conn.WriteMessage(websocket.TextMessage, []byte(msg))
 				if err != nil {
 					fmt.Println("Error during writing to websocket:", err)
-					return
 				}
 			case <-quit:
 				fmt.Println("control + c pressed!")
 				err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 				if err != nil {
 					fmt.Println("Error during closing websocket:", err)
-					return
+					os.Exit(0)
 				}
-				return
+				os.Exit(0)
 			}
 		}
 	}()
@@ -64,13 +63,13 @@ func wsClient() {
 func main() {
 	go wsClient()
 	// 将要发送到服务端的消息传递到消息管道
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 100; i++ {
 		msg := `
 				{
 					"id": 2,
-					"cmd": 0,
-					"destID": "user-2",
-					"msg": "ping!",
+					"cmd": 1,
+					"destID": "647acd26c257bfdac6a1c494",
+					"msg": "hello i am lee",
 					"msgType": 1,
 					"ackMsgID": 1
 				}

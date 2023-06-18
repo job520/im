@@ -93,7 +93,7 @@ O im/http: 网关服务，获取 websocket 连接地址（从 etcd 中获取存�
 O im/websocket: 消息模型数据结构简化
 O im/rpc: 仿照 im/websocket 服务器处理消息逻辑
 O im/websocket: 消息转发（websocket服务器 -> rpc服务器）
-X im/rpc: 消息转发（rpc服务器 -> websocket服务器）
+O im/rpc: 消息转发（rpc服务器 -> websocket服务器）
 X im/websocket: 处理心跳逻辑
 X im/websocket: 处理群消息逻辑
 ```

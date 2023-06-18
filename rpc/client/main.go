@@ -50,9 +50,9 @@ func rpcClient() {
 				err := conn.CloseSend()
 				if err != nil {
 					fmt.Println("close error:", err)
-					return
+					os.Exit(0)
 				}
-				return
+				os.Exit(0)
 			}
 		}
 	}()
