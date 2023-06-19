@@ -94,6 +94,7 @@ O im/websocket: 消息模型数据结构简化
 O im/rpc: 仿照 im/websocket 服务器处理消息逻辑
 O im/websocket: 消息转发（websocket服务器 -> rpc服务器）
 O im/rpc: 消息转发（rpc服务器 -> websocket服务器）
-X im/websocket: 简化消息模型（只保留单聊消息，去掉心跳检测和群聊消息）
-X im/rpc: 简化消息模型（只保留转发消息，去掉心跳检测）
+O im/websocket: 简化消息模型（只保留单聊消息，去掉心跳检测和群聊消息）
+O im/rpc: 简化消息模型（只保留转发消息，去掉心跳检测）
+X im/tcp: 接入 zinx（先做简单的单聊）
 ```

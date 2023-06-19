@@ -13,8 +13,3 @@ type connectMap struct {
 var ConnectMap = connectMap{
 	ClientMap: make(map[string]transfer.Transfer_ChatServer),
 }
-
-const (
-	RpcMsgTypeHeartBeat int = iota
-	RpcMsgTypeTransfer
-)

@@ -66,8 +66,9 @@ func rpcClient() {
 		}
 		if err != nil {
 			logrus.Error("receive error:", err)
+			break
 		}
-		logrus.Info("msg from server:", msg.Message)
+		logrus.Info("msg from server:", msg)
 	}
 }
 
@@ -76,7 +77,7 @@ func main() {
 	for i := 0; i < 3; i++ {
 		msg := &transfer.ChatRequestAndResponse{
 			FromConnector: ":80",
-			Message:       "ping!",
+			ToConnector:   ":81",
 		}
 		msgChan <- msg
 		time.Sleep(3 * time.Second)

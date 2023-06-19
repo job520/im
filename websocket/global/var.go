@@ -15,13 +15,6 @@ var ConnectMap = connectMap{
 	ClientMap: make(map[string]*websocket.Conn),
 }
 
-// 定义命令行格式
-const (
-	HeartMsg int = iota
-	SingleMsg
-	GroupMsg
-)
-
 type Message struct {
 	FromId string `json:"fromId,omitempty" form:"fromId"` // 发送消息用户ID
 	ToId   string `json:"ToId,omitempty" form:"ToId"`     // 接收消息用户ID
@@ -29,8 +22,3 @@ type Message struct {
 }
 
 var RpcMsgChan = make(chan *transfer.ChatRequestAndResponse)
-
-const (
-	RpcMsgTypeHeartBeat int = iota
-	RpcMsgTypeTransfer
-)

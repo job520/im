@@ -35,16 +35,10 @@ func ReceiveSingleMsg(userId string, platform int, msg string) error {
 		transferMsg := &transfer.ChatRequestAndResponse{
 			FromConnector: config.Config.Server.Address,
 			ToConnector:   wsServer,
-			MsgType:       int32(global.RpcMsgTypeTransfer),
-			Message:       "",
 			Data: &transfer.Data{
-				Id:         0,
-				Cmd:        int32(global.SingleMsg),
-				FromId:     "",
-				DestId:     "",
-				Msg:        msg,
-				MsgType:    0,
-				AckMsgType: 0,
+				FromId: "",
+				ToId:   "",
+				Msg:    msg,
 			},
 		}
 		logrus.Infof("转发消息中..., fromConnector: %s, toConnector: %s \n", transferMsg.FromConnector, transferMsg.ToConnector)

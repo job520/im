@@ -7,16 +7,10 @@ service Transfer {
 message ChatRequestAndResponse {
     string from_connector = 1;
     string to_connector = 2;
-    int32 msg_type = 3;  // rpc 服务器消息类型（心跳/转发）
-    string message = 4;  // 消息体
-    Data data = 5;
+    Data data = 3;
 }
 message Data {
-    int32 id = 1;  // 消息ID
-    int32 cmd = 2;  // 消息类型（单聊/群聊/心跳）
-    string from_id = 3;  // 发送消息用户ID
-    string dest_id = 4;  // 接收消息用户ID
-    string msg = 5;  // 消息内容
-    int32 msg_type = 6;  // 消息自定义类型（文本消息/图片消息/语音消息...）
-    int32 ack_msg_type = 7;  // 回复消息ID
+    string from_id = 1;  // 发送消息用户ID
+    string to_id = 2;  // 接收消息用户ID
+    string msg = 3;  // 消息内容
 }

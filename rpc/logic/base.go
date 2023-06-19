@@ -42,15 +42,13 @@ func (t TransferService) Chat(conn transfer.Transfer_ChatServer) error {
 
 func dispatch(msg *transfer.ChatRequestAndResponse) {
 	// todo: 消息分发逻辑（心跳/转发）
-	switch msg.MsgType {
 	// 消息转发
-	case int32(global.RpcMsgTypeTransfer):
-		toConnector := msg.ToConnector
-		conn, ok := global.ConnectMap.ClientMap[toConnector]
-		if ok {
-			if err := conn.Send(msg); err != nil {
-				logrus.Errorf("转发消息失败：%s\n", err)
-			}
+	toConnector := msg.ToConnector
+	conn, ok := global.ConnectMap.ClientMap[toConnector]
+	if ok {
+		if err := conn.Send(msg); err != nil {
+			logrus.Errorf("转发消息失败：%s\n", err)
 		}
 	}
+
 }

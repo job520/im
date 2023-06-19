@@ -52,12 +52,9 @@ func RpcClient() {
 		if err != nil {
 			logrus.Error("receive error:", err)
 		}
-		logrus.Info("msg from server:", msg.Message)
-		switch msg.MsgType {
+		logrus.Info("msg from server:", msg.Data)
 		// 消息转发
-		case int32(global.RpcMsgTypeTransfer):
-			data := msg.Data
-			logrus.Infof("收到转发消息：%v\n", data)
-		}
+		data := msg.Data
+		logrus.Infof("收到转发消息：%v\n", data)
 	}
 }

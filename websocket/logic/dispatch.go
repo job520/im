@@ -24,7 +24,7 @@ func Dispatch(userId string, platform int, data string) {
 	if err := userStatus.Online(20); err != nil {
 		logrus.Errorf("userStatus.Online error:%s\n", err.Error())
 	}
-	err = service.ReceiveSingleMsg(msg.ToId, platform, "hello from server!")
+	err = service.ReceiveSingleMsg(msg.ToId, platform, msg.Msg)
 	if err != nil {
 		logrus.Errorf("消息发送失败，error:%s\n", err.Error())
 	}

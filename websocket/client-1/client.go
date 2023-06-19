@@ -17,7 +17,7 @@ func wsClient() {
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 
 	// todo: 填写 token
-	token := ""
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODcyNzQ3NzgsInBsYXRmb3JtIjoxLCJ1aWQiOiI2NDcyYmM1MjI4YmRjM2Q2MDBkNzJiMGQifQ.ztnNlr_kATA0xVbMfFOLQPcqWvSkb844YYHyZVdYWPE"
 
 	socketUrl := "ws://localhost:8091" + "/chat"
 	header := http.Header{}
