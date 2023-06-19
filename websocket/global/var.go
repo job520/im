@@ -23,13 +23,9 @@ const (
 )
 
 type Message struct {
-	ID       int    `json:"id,omitempty" form:"id"`             // 消息ID
-	CMD      int    `json:"cmd,omitempty" form:"cmd"`           // 消息类型（单聊/群聊/心跳）
-	FromID   string `json:"fromID,omitempty" form:"fromID"`     // 发送消息用户ID
-	DestID   string `json:"destID,omitempty" form:"destID"`     // 接收消息用户ID
-	Msg      string `json:"msg,omitempty" form:"msg"`           // 消息内容
-	MsgType  int    `json:"msgType,omitempty" form:"msgType"`   // 消息自定义类型（文本消息/图片消息/语音消息...）
-	AckMsgID int    `json:"ackMsgID,omitempty" form:"ackMsgID"` // 回复消息ID
+	FromId string `json:"fromId,omitempty" form:"fromId"` // 发送消息用户ID
+	ToId   string `json:"ToId,omitempty" form:"ToId"`     // 接收消息用户ID
+	Msg    string `json:"msg,omitempty" form:"msg"`       // 消息内容
 }
 
 var RpcMsgChan = make(chan *transfer.ChatRequestAndResponse)

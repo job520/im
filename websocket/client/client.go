@@ -66,12 +66,8 @@ func main() {
 	for i := 0; i < 100; i++ {
 		msg := `
 				{
-					"id": 2,
-					"cmd": 1,
-					"destID": "647acd26c257bfdac6a1c494",
-					"msg": "hello i am lee",
-					"msgType": 1,
-					"ackMsgID": 1
+					"toId": "647acd26c257bfdac6a1c494",
+					"msg": "hello i am lee"
 				}
 `
 		msgChan <- msg
