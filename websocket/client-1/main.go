@@ -17,7 +17,7 @@ func wsClient() {
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 
 	// todo: 填写 token
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODcyNzQ3NzgsInBsYXRmb3JtIjoxLCJ1aWQiOiI2NDcyYmM1MjI4YmRjM2Q2MDBkNzJiMGQifQ.ztnNlr_kATA0xVbMfFOLQPcqWvSkb844YYHyZVdYWPE"
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODgzMDAxODQsInBsYXRmb3JtIjoxLCJ1aWQiOiI2NDcyYmM1MjI4YmRjM2Q2MDBkNzJiMGQifQ.35QssfpyWdZOtmyOPH9dPys2BuYy1ynjnwkMcEK9ohw"
 
 	socketUrl := "ws://localhost:8091" + "/chat"
 	header := http.Header{}
@@ -41,7 +41,11 @@ func wsClient() {
 				fmt.Println("control + c pressed!")
 				err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 				if err != nil {
-					fmt.Println("Error during closing websocket:", err)
+					fmt.Println("send close message error:", err)
+					os.Exit(0)
+				}
+				if err := conn.Close(); err != nil {
+					fmt.Println("conn close error:", err)
 					os.Exit(0)
 				}
 				os.Exit(0)

@@ -3,11 +3,10 @@ package service
 import (
 	"errors"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
-	"im/websocket/config"
-	"im/websocket/generate/transfer"
-	"im/websocket/global"
+	"im/tcp/config"
+	"im/tcp/generate/transfer"
+	"im/tcp/global"
 )
 
 func ReceiveSingleMsg(userId string, platform int, msg string) error {
@@ -16,7 +15,7 @@ func ReceiveSingleMsg(userId string, platform int, msg string) error {
 	mapKey := fmt.Sprintf("%s:%d", userId, platform)
 	conn, ok := global.ConnectMap.ClientMap[mapKey]
 	if ok {
-		err := conn.WriteMessage(websocket.TextMessage, []byte(msg))
+		_, err := conn.Write([]byte(msg))
 		if err != nil {
 			return err
 		}

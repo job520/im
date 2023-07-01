@@ -2,44 +2,41 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/websocket"
-	"net/http"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 )
 
+const (
+	Address = "localhost:9012"
+)
+
 var msgChan = make(chan string)
 
-func wsClient() {
+func tcpClient() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 
-	// todo: 填写 token
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODgzMDAyMDEsInBsYXRmb3JtIjoxLCJ1aWQiOiI2NDdhY2QyNmMyNTdiZmRhYzZhMWM0OTQifQ.dDp2e_rjsDCmMk8pnauJALX3qEvJ6ghp21B1LsN_S3s"
-
-	socketUrl := "ws://localhost:8092" + "/chat"
-	header := http.Header{}
-	header.Add("token", token)
-	conn, _, err := websocket.DefaultDialer.Dial(socketUrl, header)
+	conn, err := net.Dial("tcp", Address)
 	if err != nil {
 		panic(err)
 	}
-	defer conn.Close()
+	defer conn.Close() // 关闭 TCP 连接
 
 	// 发送消息
 	go func() {
 		for {
 			select {
 			case msg := <-msgChan:
-				err := conn.WriteMessage(websocket.TextMessage, []byte(msg))
+				_, err := conn.Write([]byte(msg))
 				if err != nil {
-					fmt.Println("Error during writing to websocket:", err)
+					fmt.Println("write error:", err)
 				}
 			case <-quit:
 				fmt.Println("control + c pressed!")
-				err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+				_, err := conn.Write([]byte("client closed!"))
 				if err != nil {
 					fmt.Println("send close message error:", err)
 					os.Exit(0)
@@ -52,29 +49,31 @@ func wsClient() {
 			}
 		}
 	}()
-
 	// 接收消息
 	for {
-		_, msg, err := conn.ReadMessage()
+		buf := [512]byte{}
+		n, err := conn.Read(buf[:])
 		if err != nil {
 			fmt.Println("Error in receive:", err)
 			return
 		}
-		fmt.Println("msg from server:", string(msg))
+		msg := buf[:n]
+		fmt.Println("message from server:", string(msg))
 	}
 }
 
 func main() {
-	go wsClient()
+	go tcpClient()
 	// 将要发送到服务端的消息传递到消息管道
 	for i := 0; i < 100; i++ {
-		msg := `
+		// todo: 填写 token
+		msgChan <- `
 				{
+					"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODgzMDAyMDEsInBsYXRmb3JtIjoxLCJ1aWQiOiI2NDdhY2QyNmMyNTdiZmRhYzZhMWM0OTQifQ.dDp2e_rjsDCmMk8pnauJALX3qEvJ6ghp21B1LsN_S3s",
 					"toId": "6472bc5228bdc3d600d72b0d",
 					"msg": "hello i am lee1"
 				}
 `
-		msgChan <- msg
 		time.Sleep(3 * time.Second)
 	}
 	select {}

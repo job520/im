@@ -3,14 +3,13 @@ package logic
 import (
 	"context"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
-	"im/websocket/config"
-	"im/websocket/generate/transfer"
-	"im/websocket/global"
+	"im/tcp/config"
+	"im/tcp/generate/transfer"
+	"im/tcp/global"
 	"io"
 )
 
@@ -64,7 +63,7 @@ func RpcClient() {
 			fmt.Printf("转发到 mapKey：%s\n", mapKey)
 			connTo, ok := global.ConnectMap.ClientMap[mapKey]
 			if ok {
-				err := connTo.WriteMessage(websocket.TextMessage, []byte(data.Msg))
+				_, err := connTo.Write([]byte(data.Msg))
 				if err != nil {
 					fmt.Printf("转发消息到客户端失败：%s\n", err)
 					return

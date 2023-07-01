@@ -96,7 +96,7 @@ O im/websocket: 消息转发（websocket服务器 -> rpc服务器）
 O im/rpc: 消息转发（rpc服务器 -> websocket服务器）
 O im/websocket: 简化消息模型（只保留单聊消息，去掉心跳检测和群聊消息）
 O im/rpc: 简化消息模型（只保留转发消息，去掉心跳检测）
-X im/tcp: 接入 tcp socket（仿照 websocket 项目，先做简单的单聊）
+O im/tcp: 接入 tcp socket（仿照 websocket 项目，先做简单的单聊）
 X 思考怎么接入群聊功能
 X 全部服务接入 zipkin，实现链路追踪 
 ```

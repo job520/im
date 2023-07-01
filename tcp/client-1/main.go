@@ -65,8 +65,15 @@ func tcpClient() {
 func main() {
 	go tcpClient()
 	// 将要发送到服务端的消息传递到消息管道
-	for i := 0; i < 3; i++ {
-		msgChan <- "hello from client!"
+	for i := 0; i < 100; i++ {
+		// todo: 填写 token
+		msgChan <- `
+				{
+					"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODgzMDAxODQsInBsYXRmb3JtIjoxLCJ1aWQiOiI2NDcyYmM1MjI4YmRjM2Q2MDBkNzJiMGQifQ.35QssfpyWdZOtmyOPH9dPys2BuYy1ynjnwkMcEK9ohw",
+					"toId": "647acd26c257bfdac6a1c494",
+					"msg": "hello i am lee"
+				}
+`
 		time.Sleep(3 * time.Second)
 	}
 	select {}

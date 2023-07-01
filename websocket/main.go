@@ -37,6 +37,7 @@ func Chat(ctx *gin.Context) {
 	global.ConnectMap.ClientMap[mapKey] = conn
 	global.ConnectMap.Unlock()
 
+	// 接收消息
 	for {
 		_, data, err := conn.ReadMessage()
 		if err != nil {
