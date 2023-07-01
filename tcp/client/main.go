@@ -2,50 +2,64 @@ package main
 
 import (
 	"fmt"
-	"github.com/aceld/zinx/ziface"
-	"github.com/aceld/zinx/znet"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
 const (
-	serverMsgId uint32 = iota
-	clientMsgId
+	Address = "localhost:9011"
 )
 
 var msgChan = make(chan string)
 
-type clientRouter struct {
-	znet.BaseRouter
-}
-
-func (r *clientRouter) Handle(request ziface.IRequest) {
-	// 接收消息
-	data := request.GetData()
-	fmt.Println("message from server:", string(data))
-}
-
 func tcpClient() {
-	// 创建 client客户端
-	client := znet.NewClient("127.0.0.1", 8999)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 
-	client.SetOnConnStart(func(conn ziface.IConnection) {
-		// 发送消息
-		go func() {
-			for {
-				select {
-				case msg := <-msgChan:
-					err := conn.SendMsg(serverMsgId, []byte(msg))
-					if err != nil {
-						fmt.Println(err)
-						break
-					}
+	conn, err := net.Dial("tcp", Address)
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close() // 关闭 TCP 连接
+
+	// 发送消息
+	go func() {
+		for {
+			select {
+			case msg := <-msgChan:
+				_, err := conn.Write([]byte(msg))
+				if err != nil {
+					fmt.Println("write error:", err)
 				}
+			case <-quit:
+				fmt.Println("control + c pressed!")
+				_, err := conn.Write([]byte("client closed!"))
+				if err != nil {
+					fmt.Println("send close message error:", err)
+					os.Exit(0)
+				}
+				if err := conn.Close(); err != nil {
+					fmt.Println("conn close error:", err)
+					os.Exit(0)
+				}
+				os.Exit(0)
 			}
-		}()
-	})
-	client.AddRouter(clientMsgId, &clientRouter{})
-	// 启动客户端
-	client.Start()
+		}
+	}()
+	// 接收消息
+	for {
+		buf := [512]byte{}
+		n, err := conn.Read(buf[:])
+		if err != nil {
+			fmt.Println("Error in receive:", err)
+			return
+		}
+		msg := buf[:n]
+		fmt.Println("message from server:", string(msg))
+	}
 }
 
 func main() {

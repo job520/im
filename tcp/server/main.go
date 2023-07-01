@@ -1,9 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"github.com/aceld/zinx/ziface"
-	"github.com/aceld/zinx/znet"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,51 +11,63 @@ import (
 )
 
 const (
-	serverMsgId uint32 = iota
-	clientMsgId
+	Address = "localhost:9011"
 )
 
-type serverRouter struct {
-	znet.BaseRouter
-}
+// 处理函数
+func process(conn net.Conn) {
+	defer conn.Close() // 关闭连接
 
-func (r *serverRouter) Handle(request ziface.IRequest) {
+	// 发送消息
+	go func() {
+		for {
+			_, err := conn.Write([]byte("hello from server!"))
+			if err != nil {
+				fmt.Println(err.Error())
+				return
+			}
+			time.Sleep(3 * time.Second)
+		}
+	}()
 	// 接收消息
-	data := request.GetData()
-	fmt.Println("message from client:", string(data))
+	for {
+		reader := bufio.NewReader(conn)
+		var buf [128]byte
+		n, err := reader.Read(buf[:]) // 读取数据
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		data := buf[:n]
+		fmt.Println("message from client:", string(data))
+	}
 }
 
 func main() {
 	quit := make(chan os.Signal, 1) // 退出信号
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
-
-	//srv := znet.NewUserConfServer(&zconf.Config{
-	//    Host:              "127.0.0.1",
-	//    TCPPort:           8999,
-	//    LogIsolationLevel: 2,
-	//})
-	srv := znet.NewServer()
-	srv.SetOnConnStart(func(conn ziface.IConnection) {
-		// 发送消息
-		go func() {
-			for {
-				err := conn.SendMsg(clientMsgId, []byte("hello from server!"))
-				if err != nil {
-					fmt.Println(err)
-					break
-				}
-				time.Sleep(3 * time.Second)
-			}
-		}()
-	})
-	srv.AddRouter(serverMsgId, &serverRouter{})
+	srv, err := net.Listen("tcp", Address)
+	if err != nil {
+		fmt.Println("Listen() failed, err: ", err)
+		return
+	}
 	go shutdown(quit, srv)
-	srv.Serve()
+	fmt.Printf("server running at:%s \n", Address)
+	for {
+		conn, err := srv.Accept() // 监听客户端的连接请求
+		if err != nil {
+			fmt.Println("Accept() failed, err: ", err)
+			continue
+		}
+		go process(conn) // 启动一个 goroutine 来处理客户端的连接请求
+	}
 }
 
-func shutdown(quit chan os.Signal, srv ziface.IServer) {
+func shutdown(quit chan os.Signal, srv net.Listener) {
 	<-quit
 	fmt.Println("server shutdown...")
-	srv.Stop()
+	if err := srv.Close(); err != nil {
+		fmt.Println("shutdown error:", err)
+	}
 	os.Exit(0)
 }
