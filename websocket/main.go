@@ -52,11 +52,11 @@ func Chat(ctx *gin.Context) {
 func main() {
 	quit := make(chan os.Signal, 1) // 退出信号
 	signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
-	r := gin.Default()
-	r.GET("/chat", Chat)
+	router := gin.Default()
+	router.GET("/chat", Chat)
 	srv := &http.Server{
 		Addr:    config.Config.Server.Address,
-		Handler: r,
+		Handler: router,
 	}
 	go shutdown(quit, srv)
 	logic.RegisterWsServer() // 服务注册
