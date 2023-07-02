@@ -99,13 +99,14 @@ O im/rpc: 简化消息模型（只保留转发消息，去掉心跳检测）
 O im/tcp: 接入 tcp socket（仿照 websocket 项目，先做简单的单聊）
 O 思考怎么接入群聊功能
 X 细节处理：
-    1. 不丢消息
-    2. 不重复
-    3. 不乱序
-    4. 离线消息存储
-    5. 防止离线消息重复推送
-    6. 使用 etcd 制作配置中心
-    7. 接入 zipkin（链路追踪）
+    1. 不丢消息（ACK 机制）
+    2. 不重复（消息添加全局唯一递增 ID）
+    3. 不乱序（1.消息添加全局唯一递增 ID，客户端记录 lastID；2.上线时先推送离线消息，再将状态改为 online）
+    4. 消息安全性（user_relations 表保存 AES 密钥）
+    5. 离线消息存储（msg_type:消息类型(chat/ack)、to_user_id:接收消息的用户ID、has_read:是否已读）
+    6. 防止离线消息重复推送（UPDATE `im_offline` SET has_read = true WHERE id = ${msg_id} AND has_read = false）
+    7. 使用 etcd 制作配置中心
+    8. 接入 zipkin（链路追踪）
 X 使 tcp 服务器和 websocket 服务器之间可以实现消息实时转发
 X 画出项目设计图
 ```
